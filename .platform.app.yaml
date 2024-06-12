@@ -50,8 +50,6 @@ hooks:
 # side is in the form `<service name>:<endpoint name>`.
 relationships:
   postgresql: 'postgresql:postgresql'
-  rediscache: "cache:redis"
-  redissession: "cache:redis"
 
 # The size of the persistent disk of the application (in MB).
 disk: 2048
