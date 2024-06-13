@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Piece extends Model
 {
     use HasFactory;
-    protected $guarded;
+    protected $guarded = [];
 }

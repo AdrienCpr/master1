@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class UserPost extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
 }
