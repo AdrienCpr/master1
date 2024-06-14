@@ -23,7 +23,16 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink href={route('pieces-atelier')} active={route().current('pieces-atelier')}>
-                                    Dashboard
+                                    Pièces
+                                </NavLink>
+                                <NavLink href={route('employees-atelier')} active={route().current('employees-atelier')}>
+                                    Employés
+                                </NavLink>
+                                <NavLink href={route('ranges-atelier')} active={route().current('ranges-atelier')}>
+                                    Gammes
+                                </NavLink>
+                                <NavLink href={route('ranges-history-atelier')} active={route().current('ranges-history-atelier')}>
+                                    Historique des gammes
                                 </NavLink>
                             </div>
                         </div>
@@ -35,13 +44,19 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <h1>Atelier</h1>
+                                    <h1>Comptabilité</h1>
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                    Devis
+                                </NavLink>
+                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                    Factures
+                                </NavLink>
+                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                    Nos achats
                                 </NavLink>
                             </div>
                         </div>
@@ -53,13 +68,13 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <h1>Atelier</h1>
+                                    <h1>Admin</h1>
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                    Utilisateurs
                                 </NavLink>
                             </div>
                         </div>
@@ -75,8 +90,17 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             case 'atelier':
                 return (
                     <>
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                        <ResponsiveNavLink href={route('pieces-atelier')} active={route().current('pieces-atelier')}>
+                            Pièces
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('employees-atelier')} active={route().current('employees-atelier')}>
+                            Employés
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('ranges-atelier')} active={route().current('ranges-atelier')}>
+                            Gammes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('ranges-history-atelier')} active={route().current('pieces-history-atelier')}>
+                            Historique des gammes
                         </ResponsiveNavLink>
                     </>
                 );
@@ -84,7 +108,13 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 return (
                     <>
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            Devis
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                            Factures
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                            Nos achats
                         </ResponsiveNavLink>
                     </>
                 );
@@ -92,7 +122,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                 return (
                     <>
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            Utilisateurs
                         </ResponsiveNavLink>
                     </>
                 );

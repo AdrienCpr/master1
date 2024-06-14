@@ -25,7 +25,13 @@ Route::prefix('atelier')
     ->middleware(['auth','role:atelier'])
     ->group(function () {
         Route::get('/pieces', [AtelierController::class, 'pieces'])->name('pieces-atelier');
-});
+
+        Route::get('/employees', [AtelierController::class, 'employees'])->name('employees-atelier');
+
+        Route::get('/ranges', [AtelierController::class, 'ranges'])->name('ranges-atelier');
+
+        Route::get('/ranges-history', [AtelierController::class, 'rangesHistory'])->name('ranges-history-atelier');
+    });
 
 Route::prefix('comptabilite')
     ->middleware(['auth','role:comptabilite'])

@@ -16,4 +16,22 @@ class AtelierController extends Controller
         ]);
     }
 
+    public function employees(): \Inertia\Response
+    {
+        return Inertia::render('Atelier/Employees',[
+        ]);
+    }
+
+    public function ranges(): \Inertia\Response
+    {
+        return Inertia::render('Atelier/Ranges',[
+        ]);
+    }
+
+    public function rangesHistory(): \Inertia\Response
+    {
+        return Inertia::render('Atelier/RangesHistory',[
+        ]);
+    }
+
 }
