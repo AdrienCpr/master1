@@ -66,6 +66,7 @@ export default function Pieces({ auth }:PageProps) {
         >
             <Head title="Employés" />
             <div className="py-12">
+
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between pb-3">
                         <div className="flex items-center gap-2">
