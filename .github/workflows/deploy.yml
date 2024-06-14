@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code from the repository
+      # Step 1: Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Check SSH private key
+      # Step 2: Check SSH private key
       - name: Check SSH private key
         run: |
           if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
@@ -25,73 +25,44 @@ jobs:
             echo "Key length: $(echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -c) characters"
           fi
 
-      # Set up SSH
+      # Step 3: Set up SSH
       - name: Set up SSH
         run: |
           echo "Creating .ssh directory"
-          mkdir -p ~/.ssh
-          if [ $? -ne 0 ]; then
-            echo "Failed to create .ssh directory"
-            exit 1
-          fi
+          mkdir -p ~/.ssh || { echo "Failed to create .ssh directory"; exit 1; }
 
           echo "Adding SSH private key"
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          if [ $? -ne 0 ]; then
-            echo "Failed to add private key"
-            exit 1
-          fi
-
-          chmod 600 ~/.ssh/id_rsa
-          if [ $? -ne 0 ]; then
-            echo "Failed to set permissions on private key"
-            exit 1
-          fi
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa || { echo "Failed to add private key"; exit 1; }
+          chmod 600 ~/.ssh/id_rsa || { echo "Failed to set permissions on private key"; exit 1; }
 
           echo "Adding o2switch server to known_hosts"
-          ssh-keyscan -H teneur.o2switch.net >> ~/.ssh/known_hosts
-          if [ $? -ne 0 ]; then
-            echo "Failed to add server to known_hosts"
-            exit 1
-          fi
+          ssh-keyscan -H teneur.o2switch.net >> ~/.ssh/known_hosts || { echo "Failed to add server to known_hosts"; exit 1; }
 
           echo "SSH setup completed"
 
-      # Install PHP and Node.js dependencies
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Step 4: Install PHP and Node.js dependencies
       - name: Install dependencies
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          if [ $? -ne 0 ]; then
-            echo "Composer install failed"
-            exit 1
-          fi
+          echo "Installing PHP dependencies"
+          composer install --no-interaction --prefer-dist --optimize-autoloader || { echo "Composer install failed"; exit 1; }
 
-          npm install
-          if [ $? -ne 0 ]; then
-            echo "NPM install failed"
-            exit 1
-          fi
+          echo "Installing Node.js dependencies"
+          npm install || { echo "NPM install failed"; exit 1; }
 
-          npm run build
-          if [ $? -ne 0 ]; then
-            echo "NPM build failed"
-            exit 1
-          fi
+          echo "Building assets"
+          npm run build || { echo "NPM build failed"; exit 1; }
 
-      # Deploy the code to o2switch
+      # Step 5: Deploy the code to o2switch
       - name: Deploy to o2switch
         run: |
-          rsync -avz --exclude='.git' --exclude='node_modules' --exclude='vendor' ./ coad2295@teneur.o2switch.net:/public_html/master1.adriencompare.com/
-          if [ $? -ne 0 ]; then
-            echo "Rsync failed"
-            exit 1
-          fi
+          echo "Deploying code to o2switch"
+          rsync -avz --exclude='.git' --exclude='node_modules' --exclude='vendor' ./ coad2295@teneur.o2switch.net:/public_html/master1.adriencompare.com/ || { echo "Rsync failed"; exit 1; }
 
-          ssh coad2295@teneur.o2switch.net "cd /public_html/master1.adriencompare.com/ && php artisan migrate:fresh --seed"
-          if [ $? -ne 0 ]; then
-            echo "SSH command failed"
-            exit 1
-          fi
+          echo "Running database migrations"
+          ssh coad2295@teneur.o2switch.net "cd /public_html/master1.adriencompare.com/ && php artisan migrate:fresh --seed" || { echo "SSH command failed"; exit 1; }
 
-    env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
