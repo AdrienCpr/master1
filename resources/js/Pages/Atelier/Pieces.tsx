@@ -63,7 +63,7 @@ export default function Pieces({ auth, pieces, piecesRef }:PiecesProps) {
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{piece.ref}</td>
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{piece.name}</td>
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{piece.type}</td>
-                                    <td className="px-4 py-3 text-right border border-gray-200 dark:border-gray-700">${piece.price.toFixed(2)}</td>
+                                    <td className="px-4 py-3 text-right border border-gray-200 dark:border-gray-700">${piece.price}</td>
                                     <td className="px-4 py-3 text-right border border-gray-200 dark:border-gray-700">
                                         {piecesRef
                                             .filter(ref => ref.piece_to_create_id === piece.id)
