@@ -32,5 +32,5 @@ jobs:
           rsync -avz --exclude='.git' --exclude='node_modules' --exclude='vendor' ./ coad2295@teneur.o2switch.net:/public_html/master1.adriencompare.com/
           ssh coad2295@teneur.o2switch.net "cd /public_html/master1.adriencompare.com/ && php artisan migrate:fresh --seed"
 
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
