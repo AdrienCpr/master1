@@ -10,27 +10,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Check SSH private key
+      - name: Check SSH private key
+        run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "SSH_PRIVATE_KEY is empty"
+            exit 1
+          else
+            echo "SSH_PRIVATE_KEY is set"
+            echo "Key length: $(echo "${{ secrets.SSH_PRIVATE_KEY }}" | wc -c) characters"
+          fi
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Set up SSH
       - name: Set up SSH
         run: |
+          echo "Creating .ssh directory"
           mkdir -p ~/.ssh
+          echo "Adding SSH private key"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -t rsa teneur.o2switch.net >> ~/.ssh/known_hosts
+          echo "Adding o2switch server to known_hosts"
+          ssh-keyscan -H teneur.o2switch.net >> ~/.ssh/known_hosts
+          echo "SSH setup completed"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      # Install PHP and Node.js dependencies
       - name: Install dependencies
         run: |
           composer install --no-interaction --prefer-dist --optimize-autoloader
           npm install
           npm run build
-          npm run prod
 
+      # Deploy the code to o2switch
       - name: Deploy to o2switch
         run: |
           rsync -avz --exclude='.git' --exclude='node_modules' --exclude='vendor' ./ coad2295@teneur.o2switch.net:/public_html/master1.adriencompare.com/
           ssh coad2295@teneur.o2switch.net "cd /public_html/master1.adriencompare.com/ && php artisan migrate:fresh --seed"
-
-    env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
