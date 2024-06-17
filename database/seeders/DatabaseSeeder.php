@@ -18,7 +18,14 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             PieceSeeder::class,
-            PieceRefSeeder::class
+            PieceRefSeeder::class,
+            PostSeeder::class,
+            UserPostSeeder::class,
+            RangeSeeder::class,
+            MachineSeeder::class,
+            OperationSeeder::class,
+            RangeOperationSeeder::class,
+            RangeProduceSeeder::class,
         ]);
     }
 }

@@ -13,25 +13,22 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->create([
-            'name' => 'Atelier User',
-            'email' => 'atelier@atelier.com',
-            'role_id' => 1,
-            'password' => bcrypt('password')
-        ]);
+        $users = [
+            ['name' => 'Atelier User', 'email' => 'atelier@atelier.com', 'role_id' => 1],
+            ['name' => 'Comptabilite User', 'email' => 'comptabilite@comptabilite.com', 'role_id' => 2],
+            ['name' => 'Admin User', 'email' => 'admin@admin.com', 'role_id' => 3],
+            ['name' => 'Atelier User 2', 'email' => 'atelier2@atelier.com', 'role_id' => 1],
+            ['name' => 'Atelier User 3', 'email' => 'atelier3@atelier.com', 'role_id' => 1],
+            ['name' => 'Atelier User 4', 'email' => 'atelier4@atelier.com', 'role_id' => 1],
+        ];
 
-        User::query()->create([
-            'name' => 'Comptabilite User',
-            'email' => 'comptabilite@comptabilite.com',
-            'role_id' => 2,
-            'password' => bcrypt('password')
-        ]);
-
-        User::query()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@admin.com',
-            'role_id' => 3,
-            'password' => bcrypt('password')
-        ]);
+        foreach ($users as $user) {
+            User::query()->create([
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'role_id' => $user['role_id'],
+                'password' => bcrypt('password')
+            ]);
+        }
     }
 }

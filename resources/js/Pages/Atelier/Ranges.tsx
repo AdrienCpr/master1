@@ -1,69 +1,46 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import {PageProps } from '@/types';
+import {PageProps, Piece, User} from '@/types';
 import React, {useState} from "react";
 import { PencilIcon, SearchIcon, TrashIcon } from "lucide-react";
+
+type Post = {
+    id: number,
+    name : string
+}
+
+type Machine = {
+    id: number,
+    name : string
+}
 
 type Operation = {
     name: string;
     time: number;
-    post: string;
-    machine: string;
+    post: Post;
+    machine: Machine;
 };
 
 type Range = {
     id: number;
     name: string;
-    responsible: string;
+    user: User;
+    piece: Piece;
     operations: Operation[];
 };
 
-export default function Ranges({ auth }:PageProps) {
-    const [ranges, setRanges] = useState<Range[]>([
-        {
-            id: 1,
-            name: "Gamme - Pièce X",
-            responsible: "John Doe",
-            operations: [
-                { name: "Couper la pièce", time: 30, post: "Scieur", machine: "Scie circulaire" },
-                { name: "Percer les trous", time: 20, post: "Perceur", machine: "Perceuse" },
-                { name: "Assembler les éléments", time: 40, post: "Assembleur", machine: "Assembleuse" },
-            ]
-        },
-        {
-            id: 2,
-            name: "Gamme - Pièce Y",
-            responsible: "John Doe",
-            operations: [
-                { name: "Couper la pièce", time: 30, post: "Scieur", machine: "Scie circulaire" },
-                { name: "Percer les trous", time: 20, post: "Perceur", machine: "Perceuse" },
-                { name: "Assembler les éléments", time: 40, post: "Assembleur", machine: "Assembleuse" },
-            ]
-        },
-        {
-            id: 3,
-            name: "Gamme - Pièce Z",
-            responsible: "John Doe",
-            operations: [
-                { name: "Couper la pièce", time: 30, post: "Scieur", machine: "Scie circulaire" },
-                { name: "Percer les trous", time: 20, post: "Perceur", machine: "Perceuse" },
-                { name: "Assembler les éléments", time: 40, post: "Assembleur", machine: "Assembleuse" },
-            ]
-        },
-    ]);
+interface RangeProps extends PageProps {
+    ranges: Range[]
+}
+
+export default function Ranges({ auth, ranges }:RangeProps) {
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedRange, setSelectedRange] = useState<Range | null>(null);
     const [isProduceModalOpen, setIsProduceModalOpen] = useState<boolean>(false);
 
     const addRange = () => {
-        const newRange: Range = {
-            id: Math.random(),
-            name: "Nouvelle Gamme",
-            responsible: "Nouveau Responsable",
-            operations: []
-        };
-        setRanges([...ranges, newRange]);
+        console.log('add')
     };
 
     const editRange = (id: number) => {
@@ -71,8 +48,7 @@ export default function Ranges({ auth }:PageProps) {
     };
 
     const deleteRange = (id: number) => {
-        const updatedRanges = ranges.filter((range) => range.id !== id);
-        setRanges(updatedRanges);
+        console.log('delete')
     };
 
     const openModal = (range: Range) => {
@@ -138,10 +114,10 @@ export default function Ranges({ auth }:PageProps) {
                                         >
                                             <TrashIcon className="w-5 h-5" />
                                         </button>
-                                        <h2 className="text-xl font-semibold">{range.name}</h2>
+                                        <h2 className="text-xl font-semibold">{range.piece.name}</h2>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-gray-500">Responsable : {range.responsible}</span>
+                                        <span className="text-gray-500">Responsable : {range.user.name}</span>
                                         <button
                                             onClick={() => openProduceModal(range)}
                                             className="px-3 py-1 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
@@ -163,19 +139,22 @@ export default function Ranges({ auth }:PageProps) {
                             </div>
                         ))}
                     </div>
+
                     {/* Modal pour afficher les détails des opérations */}
                     {isModalOpen && selectedRange && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                            <div className="bg-white rounded-lg p-8 max-w-md overflow-y-auto">
+                            <div className="bg-white rounded-lg p-8 max-w-3xl overflow-y-auto">
                                 <h2 className="text-2xl font-semibold mb-4">{selectedRange.name}</h2>
-                                {selectedRange.operations.map((operation, index) => (
-                                    <div key={index} className="bg-gray-100 rounded-md p-4 mb-4">
-                                        <h3 className="text-lg font-semibold">{operation.name}</h3>
-                                        <p>Temps : {operation.time} min</p>
-                                        <p>Poste : {operation.post}</p>
-                                        <p>Machine : {operation.machine}</p>
-                                    </div>
-                                ))}
+                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    {selectedRange.operations.map((operation, index) => (
+                                        <div key={index} className="bg-gray-100 rounded-lg p-4">
+                                            <h3 className="text-lg font-semibold">{operation.name}</h3>
+                                            <p className="text-sm">Temps : {operation.time}</p>
+                                            <p className="text-sm">Poste : {operation.post.name}</p>
+                                            <p className="text-sm">Machine : {operation.machine.name}</p>
+                                        </div>
+                                    ))}
+                                </div>
                                 <button onClick={closeModal} className="mt-4 px-3 py-1 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800">
                                     Fermer
                                 </button>
@@ -183,43 +162,63 @@ export default function Ranges({ auth }:PageProps) {
                         </div>
                     )}
 
+
                     {/* Nouvelle Modal pour produire */}
                     {isProduceModalOpen && selectedRange && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                            <div className="bg-white rounded-lg p-8 max-w-md overflow-y-auto">
+                            <div className="bg-white rounded-lg p-8 max-w-screen-lg overflow-x-auto">
                                 <h2 className="text-2xl font-semibold mb-4">{selectedRange.name}</h2>
-                                {selectedRange.operations.map((operation, index) => (
-                                    <div key={index} className="bg-gray-100 rounded-md p-4 mb-4">
-                                        <h3 className="text-lg font-semibold">{operation.name}</h3>
-                                        <div className={"flex"}>
-                                            <p>Temps : </p>
-                                            <input type={"text"} value={operation.time} />
+                                <div className="flex flex-no-wrap gap-4 overflow-x-auto">
+                                    {selectedRange.operations.map((operation, index) => (
+                                        <div key={index} className="flex-shrink-0 bg-gray-100 rounded-lg p-4 min-w-64">
+                                            <h3 className="text-lg font-semibold">{operation.name}</h3>
+                                            <div className="flex items-center gap-4 mt-2">
+                                                <p>Temps :</p>
+                                                <input
+                                                    type="time"
+                                                    className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
+                                                    value={operation.time}
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-4 mt-2">
+                                                <p>Poste :</p>
+                                                <select
+                                                    className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
+                                                >
+                                                    <option>Poste 1</option>
+                                                    <option>Poste 2</option>
+                                                </select>
+                                            </div>
+                                            <div className="flex items-center gap-4 mt-2">
+                                                <p>Machine :</p>
+                                                <select
+                                                    className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
+                                                >
+                                                    <option>Machine 1</option>
+                                                    <option>Machine 2</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div className={"flex"}>
-                                            <p>Poste : </p>
-                                            <select>
-                                                <option>Poste 1</option>
-                                                <option>Poste 2</option>
-                                            </select>
-                                        </div>
-                                        <div className={"flex"}>
-                                            <p>Machine : </p>
-                                            <select>
-                                                <option> Machine 1</option>
-                                                <option> Machine 2</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                ))}
-                                <button onClick={closeProduceModal} className="mt-4 px-3 py-1 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800">
-                                    Produire
-                                </button>
-                                <button onClick={closeProduceModal} className="mt-4 px-3 py-1 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800">
-                                    Fermer
-                                </button>
+                                    ))}
+                                </div>
+                                <div className="flex justify-end gap-4 mt-4">
+                                    <button
+                                        onClick={closeProduceModal}
+                                        className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                                    >
+                                        Produire
+                                    </button>
+                                    <button
+                                        onClick={closeProduceModal}
+                                        className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                                    >
+                                        Fermer
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
+
                 </div>
             </div>
         </AuthenticatedLayout>

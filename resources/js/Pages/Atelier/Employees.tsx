@@ -1,45 +1,34 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import {PageProps } from '@/types';
-import {useState} from "react";
+import { PageProps } from '@/types';
+import { useState } from 'react';
+
+type Post = {
+    name: string;
+};
+
+type Piece = {
+    name: string;
+};
 
 type Worker = {
+    id: number;
     name: string;
-    qualifications: string[];
+    posts: Post[];
 };
 
 type Manager = {
+    id: number;
     name: string;
-    responsibilities: string[];
+    ranges: { piece: Piece }[];
 };
 
-const workers: Worker[] = [
-    { name: 'Jean Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Peindre'] },
-    { name: 'Pierre Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Vernir'] },
-    { name: 'Jean Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Peindre'] },
-    { name: 'Pierre Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Vernir'] },
-    { name: 'Jean Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Peindre'] },
-    { name: 'Pierre Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Vernir'] },
-    { name: 'Jean Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Peindre'] },
-    { name: 'Pierre Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Vernir'] },
-    { name: 'Jean Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Peindre'] },
-    { name: 'Pierre Dupont', qualifications: ['Couper du bois', 'Scier', 'Poncer', 'Vernir'] },
-];
+interface EmployeesProps extends PageProps {
+    workers: Worker[];
+    managers: Manager[];
+}
 
-const managers: Manager[] = [
-    { name: 'Marie Dupont', responsibilities: ['Création d\'un filet', 'Création d\'une planche de ping pong', 'Création d\'un banc', 'Création d\'une table'] },
-    { name: 'Sophie Dupont', responsibilities: ['Création d\'un meuble TV', 'Création d\'un bureau', 'Création d\'une étagère', 'Création d\'un lit'] },
-    { name: 'Marie Dupont', responsibilities: ['Création d\'un filet', 'Création d\'une planche de ping pong', 'Création d\'un banc', 'Création d\'une table'] },
-    { name: 'Sophie Dupont', responsibilities: ['Création d\'un meuble TV', 'Création d\'un bureau', 'Création d\'une étagère', 'Création d\'un lit'] },
-    { name: 'Marie Dupont', responsibilities: ['Création d\'un filet', 'Création d\'une planche de ping pong', 'Création d\'un banc', 'Création d\'une table'] },
-    { name: 'Sophie Dupont', responsibilities: ['Création d\'un meuble TV', 'Création d\'un bureau', 'Création d\'une étagère', 'Création d\'un lit'] },
-    { name: 'Marie Dupont', responsibilities: ['Création d\'un filet', 'Création d\'une planche de ping pong', 'Création d\'un banc', 'Création d\'une table'] },
-    { name: 'Sophie Dupont', responsibilities: ['Création d\'un meuble TV', 'Création d\'un bureau', 'Création d\'une étagère', 'Création d\'un lit'] },
-    { name: 'Marie Dupont', responsibilities: ['Création d\'un filet', 'Création d\'une planche de ping pong', 'Création d\'un banc', 'Création d\'une table'] },
-    { name: 'Sophie Dupont', responsibilities: ['Création d\'un meuble TV', 'Création d\'un bureau', 'Création d\'une étagère', 'Création d\'un lit'] },
-];
-
-export default function Pieces({ auth }:PageProps) {
+export default function Employees({ auth, workers, managers }: EmployeesProps) {
     const [employeeType, setEmployeeType] = useState<'worker' | 'manager'>('worker');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 6; // Nombre d'éléments par page
@@ -81,24 +70,24 @@ export default function Pieces({ auth }:PageProps) {
                         </div>
                     </div>
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {currentItems.map((employee, index) => (
-                            <div key={index} className="bg-white shadow-md rounded-md p-4 flex flex-col">
+                        {currentItems.map((employee) => (
+                            <div key={employee.id} className="bg-white shadow-md rounded-md p-4 flex flex-col">
                                 <div className="flex items-center justify-between mb-2">
                                     <h2 className="text-lg font-semibold">{employee.name}</h2>
                                     <p className="text-sm">{employeeType === 'worker' ? 'Ouvrier' : 'Responsable'}</p>
                                 </div>
                                 <div className="grid gap-2">
-                                    {employeeType === 'worker' && 'qualifications' in employee ? (
-                                        employee.qualifications.map((qualification, i) => (
+                                    {employeeType === 'worker' && 'posts' in employee ? (
+                                        employee.posts.map((post, i) => (
                                             <div key={i} className="flex items-center justify-between">
-                                                <span>{qualification}</span>
+                                                <span>{post.name}</span>
                                             </div>
                                         ))
                                     ) : (
-                                        employeeType === 'manager' && 'responsibilities' in employee ? (
-                                            employee.responsibilities.map((responsibility, i) => (
+                                        employeeType === 'manager' && 'ranges' in employee ? (
+                                            employee.ranges.map((range, i) => (
                                                 <div key={i} className="flex items-center justify-between">
-                                                    <span>{responsibility}</span>
+                                                    <span>{range.piece.name}</span>
                                                 </div>
                                             ))
                                         ) : null
