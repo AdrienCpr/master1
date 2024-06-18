@@ -17,6 +17,19 @@ return new class extends Migration
             $table->foreign("range_produce_id")
                 ->references("id")
                 ->on("range_produces");
+            $table->unsignedBigInteger('operation_id');
+            $table->foreign("operation_id")
+                ->references("id")
+                ->on("operations");
+            $table->unsignedBigInteger('post_id');
+            $table->foreign("post_id")
+                ->references("id")
+                ->on("posts");
+            $table->unsignedBigInteger('machine_id');
+            $table->foreign("machine_id")
+                ->references("id")
+                ->on("machines");
+            $table->time("time");
             $table->timestamps();
         });
     }

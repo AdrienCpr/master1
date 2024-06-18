@@ -31,20 +31,29 @@ interface EmployeesProps extends PageProps {
 export default function Employees({ auth, workers, managers }: EmployeesProps) {
     const [employeeType, setEmployeeType] = useState<'worker' | 'manager'>('worker');
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6; // Nombre d'éléments par page
+    const [searchTerm, setSearchTerm] = useState('');
+    const itemsPerPage = 3;
 
     const handleTypeChange = (type: 'worker' | 'manager') => {
         setEmployeeType(type);
         setCurrentPage(1);
     };
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const filteredEmployees = (employeeType === 'worker' ? workers : managers).filter((employee) =>
+        employee.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-    const currentEmployees = employeeType === 'worker' ? workers : managers;
-    const currentItems = currentEmployees.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
 
-    const totalPages = Math.ceil(currentEmployees.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -66,7 +75,13 @@ export default function Employees({ auth, workers, managers }: EmployeesProps) {
                                 <option value="worker">Ouvrier</option>
                                 <option value="manager">Responsable</option>
                             </select>
-                            <input className="max-w-xs border border-gray-300 rounded-md px-4 py-2" placeholder="Rechercher..." type="search" />
+                            <input
+                                className="max-w-xs border border-gray-300 rounded-md px-4 py-2"
+                                placeholder="Rechercher..."
+                                type="search"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
                         </div>
                     </div>
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             OperationSeeder::class,
             RangeOperationSeeder::class,
             RangeProduceSeeder::class,
+            RangeProduceOperationSeeder::class
         ]);
     }
 }

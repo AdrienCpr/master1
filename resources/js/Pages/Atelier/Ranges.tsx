@@ -1,17 +1,18 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import {PageProps, Piece, User} from '@/types';
-import React, {useState} from "react";
+import { PageProps, Piece, User } from '@/types';
+import React, { useState } from "react";
 import { PencilIcon, SearchIcon, TrashIcon } from "lucide-react";
+import {log} from "util";
 
 type Post = {
     id: number,
-    name : string
+    name: string
 }
 
 type Machine = {
     id: number,
-    name : string
+    name: string
 }
 
 type Operation = {
@@ -30,14 +31,36 @@ type Range = {
 };
 
 interface RangeProps extends PageProps {
-    ranges: Range[]
+    ranges: Range[],
+    posts: Post[],
+    machines: Machine[]
 }
 
-export default function Ranges({ auth, ranges }:RangeProps) {
-
+export default function Ranges({ auth, ranges, posts, machines }: RangeProps) {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedRange, setSelectedRange] = useState<Range | null>(null);
     const [isProduceModalOpen, setIsProduceModalOpen] = useState<boolean>(false);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const itemsPerPage = 3;
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const filteredRanges = ranges.filter((range) =>
+        range.piece.name.includes(searchTerm)
+    );
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredRanges.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(filteredRanges.length / itemsPerPage);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const addRange = () => {
         console.log('add')
@@ -70,6 +93,7 @@ export default function Ranges({ auth, ranges }:RangeProps) {
         setIsProduceModalOpen(false);
         setSelectedRange(null);
     };
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -87,6 +111,8 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                                     className="pl-10 pr-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="Rechercher une gamme"
                                     type="text"
+                                    value={searchTerm} // Ajout de la valeur de l'état de recherche
+                                    onChange={handleSearchChange} // Ajout de la gestion de l'événement de changement
                                 />
                             </div>
                             <button
@@ -98,7 +124,7 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                         </div>
                     </div>
                     <div className="grid gap-8">
-                        {ranges.map((range) => (
+                        {currentItems.map((range) => (
                             <div key={range.id} className="bg-white rounded-lg shadow-md p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
@@ -140,6 +166,19 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                         ))}
                     </div>
 
+                    {/* Pagination */}
+                    <div className="flex justify-center mt-4">
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <button
+                                key={i}
+                                className={`mx-1 px-3 py-1 rounded-md border ${currentPage === i + 1 ? 'bg-gray-300' : 'border-gray-300 hover:bg-gray-200'}`}
+                                onClick={() => paginate(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* Modal pour afficher les détails des opérations */}
                     {isModalOpen && selectedRange && (
                         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -161,7 +200,6 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                             </div>
                         </div>
                     )}
-
 
                     {/* Nouvelle Modal pour produire */}
                     {isProduceModalOpen && selectedRange && (
@@ -185,8 +223,14 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                                                 <select
                                                     className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
                                                 >
-                                                    <option>Poste 1</option>
-                                                    <option>Poste 2</option>
+                                                    {posts.map((post, index) => (
+                                                        post.id === operation.post.id ?
+                                                            (
+                                                                <option selected value={post.id}>{post.name}</option>
+                                                            ) : (
+                                                                <option value={post.id}>{post.name}</option>
+                                                            )
+                                                    ))}
                                                 </select>
                                             </div>
                                             <div className="flex items-center gap-4 mt-2">
@@ -194,8 +238,14 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                                                 <select
                                                     className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
                                                 >
-                                                    <option>Machine 1</option>
-                                                    <option>Machine 2</option>
+                                                    {machines.map((machine, index) => (
+                                                        machine.id === operation.machine.id ?
+                                                            (
+                                                                <option selected value={machine.id}>{machine.name}</option>
+                                                            ) : (
+                                                                <option value={machine.id}>{machine.name}</option>
+                                                            )
+                                                    ))}
                                                 </select>
                                             </div>
                                         </div>
@@ -218,7 +268,6 @@ export default function Ranges({ auth, ranges }:RangeProps) {
                             </div>
                         </div>
                     )}
-
                 </div>
             </div>
         </AuthenticatedLayout>

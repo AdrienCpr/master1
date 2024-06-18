@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Machine;
 use App\Models\Piece;
 use App\Models\PieceRef;
+use App\Models\Post;
 use App\Models\Range;
+use App\Models\RangeProduce;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AtelierController extends Controller
@@ -42,13 +46,28 @@ class AtelierController extends Controller
 
         return Inertia::render('Atelier/Ranges', [
             'ranges' => $ranges,
+            'posts' => Auth::user()->posts()->get(),
+            'machines' => Machine::query()->get()
         ]);
     }
 
     public function rangesHistory(): \Inertia\Response
     {
-        return Inertia::render('Atelier/RangesHistory',[
+        $rangesProduce = RangeProduce::with([
+            'range',
+            'range.user',
+            'range.piece',
+            'rangeProduceOperations',
+            'rangeProduceOperations.operation',
+            'rangeProduceOperations.machine',
+            'rangeProduceOperations.post',
+            'range.operations',
+            'range.operations.post',
+            'range.operations.machine'
+        ])->get();
+
+        return Inertia::render('Atelier/RangesHistory', [
+            'rangesProduce' => $rangesProduce,
         ]);
     }
-
 }
