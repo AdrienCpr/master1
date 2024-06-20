@@ -84,13 +84,12 @@ export default function RangesHistory({ auth, rangesProduce }: Props) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Gammes</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Historique des gammes</h2>}
         >
             <Head title="Gammes" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-bold">Historique des gammes</h1>
                         <div className="flex items-center gap-4">
                             <div className="relative w-full max-w-md">
                                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />

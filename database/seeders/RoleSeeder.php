@@ -24,5 +24,9 @@ class RoleSeeder extends Seeder
         Role::query()->create([
             'name' => "admin"
         ]);
+
+        Role::query()->create([
+            'name' => "responsable"
+        ]);
     }
 }

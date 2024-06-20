@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Machine;
+use App\Models\Operation;
 use App\Models\Piece;
 use App\Models\PieceRef;
-use App\Models\Post;
 use App\Models\Range;
 use App\Models\RangeProduce;
 use App\Models\User;
@@ -29,7 +29,7 @@ class AtelierController extends Controller
             ->with('posts')
             ->get();
         $managers = User::query()
-            ->where('role_id', 1)
+            ->where('role_id', 4)
             ->whereHas('ranges')
             ->with('ranges.piece')
             ->get();
@@ -47,7 +47,10 @@ class AtelierController extends Controller
         return Inertia::render('Atelier/Ranges', [
             'ranges' => $ranges,
             'posts' => Auth::user()->posts()->get(),
-            'machines' => Machine::query()->get()
+            'machines' => Machine::query()->get(),
+            'pieces' => Piece::query()->get(),
+            'users' => User::query()->where("role_id", 4)->get(),
+            'operations' => Operation::query()->get()
         ]);
     }
 

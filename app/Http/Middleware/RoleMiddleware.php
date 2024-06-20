@@ -16,11 +16,12 @@ class RoleMiddleware
      * @param  string  $role
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, string $role)
+    public function handle(Request $request, Closure $next, string $roles)
     {
         $user = Auth::user()->load('role');
+        $rolesArray = explode('|', $roles);
 
-        if ($user->role->name !== $role) {
+        if (!in_array($user->role->name, $rolesArray)) {
             return redirect('/')->with('error', 'You do not have access to this page');
         }
 

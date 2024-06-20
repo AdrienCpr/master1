@@ -16,10 +16,10 @@ class RangeSeeder extends Seeder
     public function run(): void
     {
         $fabricatedPieces = Piece::query()->where('type', 'fabriqué')->get();
-        $atelierUsers = User::query()->where('role_id', 1)->get();
+        $atelierResponsableUsers = User::query()->where('role_id', 4)->get();
 
         foreach ($fabricatedPieces as $piece) {
-            $user = $atelierUsers->random();
+            $user = $atelierResponsableUsers->random();
 
             Range::query()->create([
                 'user_id' => $user->id,

@@ -20,6 +20,11 @@ class UserSeeder extends Seeder
             ['name' => 'Atelier User 2', 'email' => 'atelier2@atelier.com', 'role_id' => 1],
             ['name' => 'Atelier User 3', 'email' => 'atelier3@atelier.com', 'role_id' => 1],
             ['name' => 'Atelier User 4', 'email' => 'atelier4@atelier.com', 'role_id' => 1],
+            ['name' => 'Responsable User 1', 'email' => 'responsable1@atelier.com', 'role_id' => 4],
+            ['name' => 'Responsable User 2', 'email' => 'responsable2@atelier.com', 'role_id' => 4],
+            ['name' => 'Responsable User 3', 'email' => 'responsable3@atelier.com', 'role_id' => 4],
+            ['name' => 'Responsable User 4', 'email' => 'responsable4@atelier.com', 'role_id' => 4],
+
         ];
 
         foreach ($users as $user) {

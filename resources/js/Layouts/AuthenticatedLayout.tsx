@@ -9,6 +9,7 @@ import { User } from '@/types';
 export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
+    console.log(user.role.name)
     const renderNavLinks = () => {
         switch (user.role.name) {
             case 'atelier':
@@ -38,6 +39,33 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </div>
                     </>
                 );
+        case 'responsable':
+            return (
+                <>
+                    <div className="flex">
+                        <div className="shrink-0 flex items-center">
+                            <Link href="/">
+                                <h1>Atelier</h1>
+                            </Link>
+                        </div>
+
+                        <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <NavLink href={route('pieces-atelier')} active={route().current('pieces-atelier')}>
+                                Pièces
+                            </NavLink>
+                            <NavLink href={route('employees-atelier')} active={route().current('employees-atelier')}>
+                                Employés
+                            </NavLink>
+                            <NavLink href={route('ranges-atelier')} active={route().current('ranges-atelier')}>
+                                Gammes
+                            </NavLink>
+                            <NavLink href={route('ranges-history-atelier')} active={route().current('ranges-history-atelier')}>
+                                Historique des gammes
+                            </NavLink>
+                        </div>
+                    </div>
+                </>
+            );
             case 'comptabilite':
                 return (
                     <>
@@ -88,6 +116,23 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     const renderResponsiveNavLinks = () => {
         switch (user.role.name) {
             case 'atelier':
+                return (
+                    <>
+                        <ResponsiveNavLink href={route('pieces-atelier')} active={route().current('pieces-atelier')}>
+                            Pièces
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('employees-atelier')} active={route().current('employees-atelier')}>
+                            Employés
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('ranges-atelier')} active={route().current('ranges-atelier')}>
+                            Gammes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('ranges-history-atelier')} active={route().current('pieces-history-atelier')}>
+                            Historique des gammes
+                        </ResponsiveNavLink>
+                    </>
+                );
+            case 'responsable':
                 return (
                     <>
                         <ResponsiveNavLink href={route('pieces-atelier')} active={route().current('pieces-atelier')}>
