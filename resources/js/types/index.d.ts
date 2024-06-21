@@ -6,6 +6,13 @@ export interface User {
     email_verified_at: string;
 }
 
+type Range = {
+    id: number;
+    name: string;
+    user: User;
+    piece: Piece;
+    operations: Operation[];
+};
 export interface Role {
     id: number;
     name: string;
@@ -26,6 +33,25 @@ export interface PieceRef {
     quantity: number;
     created_at: string;
     updated_at: string;
+}
+
+export interface Operation{
+    id: number,
+    name: string,
+    time: string,
+    post_id: number,
+    machine_id: number
+}
+
+export interface Post {
+    id: number;
+    name: string;
+}
+
+export interface Machine {
+    id: number;
+    name: string;
+    post_id: number
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

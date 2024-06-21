@@ -68,6 +68,8 @@ class RangeController extends Controller
 
     public function destroy(Range $range)
     {
+        RangeOperation::query()->where("range_id", $range->id)->delete();
+
         $range->delete();
 
         return redirect()->route('ranges-atelier');

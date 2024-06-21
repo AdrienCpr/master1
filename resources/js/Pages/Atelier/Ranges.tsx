@@ -1,20 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, useForm} from '@inertiajs/react';
-import { PageProps, Piece, User } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
+import { Machine, PageProps, Piece, Post, User } from '@/types';
 import React, { useState } from "react";
 import { PencilIcon, SearchIcon, TrashIcon } from "lucide-react";
 import Modal from "react-modal";
-import {Inertia} from "@inertiajs/inertia";
-
-type Post = {
-    id: number,
-    name: string
-}
-
-type Machine = {
-    id: number,
-    name: string
-}
+import { Inertia } from "@inertiajs/inertia";
+import {toast} from "react-toastify";
 
 type Operation = {
     id: number;
@@ -33,12 +24,12 @@ type Range = {
 };
 
 interface RangeProps extends PageProps {
-    ranges: Range[],
-    posts: Post[],
-    machines: Machine[],
-    pieces: Piece[],
-    users: User[],
-    operations: Operation[]
+    ranges: Range[];
+    posts: Post[];
+    machines: Machine[];
+    pieces: Piece[];
+    users: User[];
+    operations: Operation[];
 }
 
 export default function Ranges({ auth, ranges, posts, machines, pieces, users, operations }: RangeProps) {
@@ -73,7 +64,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
     const { data, setData, post, put, delete: destroy } = useForm({
         piece_id: '',
         user_id: '',
-        range_operations: [{ operation_id: ''}]
+        range_operations: [{ operation_id: '' }]
     });
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -83,14 +74,21 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
         setEditModalOpen(false);
         setDeleteModalOpen(false);
     };
+
     const addRange = () => {
-        setData({ piece_id: '', user_id: '', range_operations: [{ operation_id: ''}] });
+        setData({ piece_id: '', user_id: '', range_operations: [{ operation_id: '' }] });
         setCreateModalOpen(true);
     };
 
     const handleCreate = () => {
         post(route('ranges.store'), {
-            onSuccess: () => closeModals(),
+            onSuccess: () => {
+                closeModals();
+                toast.success('Gamme créé avec succès!');
+            },
+            onError: (errors) => {
+                toast.error('Erreur lors de la suppression de la gamme.');
+            }
         });
     };
 
@@ -134,16 +132,20 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
         setSelectedRange(null);
     };
 
-    const handleOperationChange = (index:number, field:string, value:string) => {
+    const handleOperationChange = (index: number, field: string, value: string) => {
         if (selectedRange) {
-            const updatedOperations = [...selectedRange.operations];
-            updatedOperations[index] = {
-                ...updatedOperations[index],
-                [field]: value
-            };
+            const updatedOperations = selectedRange.operations.map((op, idx) => {
+                if (idx === index) {
+                    return {
+                        ...op,
+                        [field]: field === 'post' ? posts.find(post => post.id === parseInt(value, 10)) || op[field] : value,
+                    };
+                }
+                return op;
+            });
             setSelectedRange({
                 ...selectedRange,
-                operations: updatedOperations
+                operations: updatedOperations,
             });
         }
     };
@@ -161,24 +163,48 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                 formData.append(`operations[${index}][machine_id]`, operation.machine.id.toString());
             });
 
-            Inertia.post('/atelier/ranges/produce', formData)
+            Inertia.post('/atelier/ranges/produce', formData, {
+                onSuccess: () => {
+                    closeModals();
+                    toast.success('Gamme produite avec succès!');
+                },
+                onError: (errors) => {
+                    toast.error('Erreur lors de la production de la gamme.');
+                }
+            });
 
-            closeModals()
+            closeProduceModal();
         }
     };
 
     const handleUpdate = () => {
         put(route('ranges.update', { range: currentRange?.id }), {
-            onSuccess: () => closeModals(),
+            onSuccess: () => {
+                closeModals();
+                toast.success('Gamme modifié avec succès!');
+            },
+            onError: (errors) => {
+                toast.error('Erreur lors de la modification de la gamme.');
+            }
         });
     };
 
     const handleDelete = () => {
         if (currentRange) {
             destroy(route('ranges.destroy', currentRange.id), {
-                onSuccess: () => closeModals(),
+                onSuccess: () => {
+                    closeModals();
+                    toast.success('Gamme supprimé avec succès!');
+                },
+                onError: (errors) => {
+                    toast.error('Erreur lors de la suppression de la gamme.');
+                }
             });
         }
+    };
+
+    const filteredMachinesByPost = (post_id: number) => {
+        return machines.filter(machine => machine.post_id === post_id);
     };
 
     return (
@@ -216,23 +242,22 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                             <div key={range.id} className="bg-white rounded-lg shadow-md p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
-                                        {auth.user.id === range.user.id &&
-                                            (
-                                                <div><button
+                                        {auth.user.id === range.user.id && (
+                                            <div>
+                                                <button
                                                     onClick={() => editRange(range.id)}
                                                     className="text-gray-500 hover:text-black focus:outline-none"
                                                 >
-                                                    <PencilIcon className="w-5 h-5"/>
+                                                    <PencilIcon className="w-5 h-5" />
                                                 </button>
-                                                    <button
-                                                        onClick={() => openDeleteModal(range)}
-                                                        className="text-gray-500 hover:text-black focus:outline-none"
-                                                    >
-                                                        <TrashIcon className="w-5 h-5"/>
-                                                    </button>
-                                                </div>
-                                            )
-                                        }
+                                                <button
+                                                    onClick={() => openDeleteModal(range)}
+                                                    className="text-gray-500 hover:text-black focus:outline-none"
+                                                >
+                                                    <TrashIcon className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        )}
                                         <h2 className="text-xl font-semibold">{range.piece.name}</h2>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -246,266 +271,393 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                     </div>
                                 </div>
                                 <ul className="space-y-2">
-                                    {range.operations.map((operation, index) => (
-                                        <li key={index}>
+                                    {range.operations.map((operation) => (
+                                        <li key={operation.id}>
                                             {operation.name}
                                         </li>
                                     ))}
                                 </ul>
-                                <button onClick={() => openModal(range)} className="mt-4 px-3 py-1 border border-black text-black rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
+                                <button
+                                    onClick={() => openModal(range)}
+                                    className="mt-4 px-3 py-1 border border-black text-black rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                                >
                                     Détails des opérations
                                 </button>
                             </div>
                         ))}
                     </div>
-
-                    {/* Pagination */}
-                    <div className="flex justify-center mt-4">
-                        {Array.from({ length: totalPages }, (_, i) => (
+                    <div className="flex justify-center mt-6 space-x-1">
+                        {Array.from({ length: totalPages }, (_, index) => (
                             <button
-                                key={i}
-                                className={`mx-1 px-3 py-1 rounded-md border ${currentPage === i + 1 ? 'bg-gray-300' : 'border-gray-300 hover:bg-gray-200'}`}
-                                onClick={() => paginate(i + 1)}
+                                key={index}
+                                onClick={() => paginate(index + 1)}
+                                className={`px-4 py-2 rounded-md ${currentPage === index + 1 ? 'bg-black text-white' : 'bg-white text-black'}`}
                             >
-                                {i + 1}
+                                {index + 1}
                             </button>
                         ))}
                     </div>
-
-                    {/* Modal pour afficher les détails des opérations */}
-                    {isModalOpen && selectedRange && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                            <div className="bg-white rounded-lg p-8 max-w-3xl overflow-y-auto">
-                                <h2 className="text-2xl font-semibold mb-4">{selectedRange.name}</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                    {selectedRange.operations.map((operation, index) => (
-                                        <div key={index} className="bg-gray-100 rounded-lg p-4">
-                                            <h3 className="text-lg font-semibold">{operation.name}</h3>
-                                            <p className="text-sm">Temps : {operation.time}</p>
-                                            <p className="text-sm">Poste : {operation.post.name}</p>
-                                            <p className="text-sm">Machine : {operation.machine.name}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                                <button onClick={closeModal} className="mt-4 px-3 py-1 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800">
-                                    Fermer
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Nouvelle Modal pour produire */}
-                    {isProduceModalOpen && selectedRange && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                            <div className="bg-white rounded-lg p-8 max-w-screen-lg overflow-x-auto">
-                                <h2 className="text-2xl font-semibold mb-4">{selectedRange.piece.name} - Produire</h2>
-                                <form onSubmit={handleCreateProduce}>
-                                    <div className="flex flex-no-wrap gap-4 overflow-x-auto">
-                                        {selectedRange.operations.map((operation, index) => (
-                                            <div key={index} className="flex-shrink-0 bg-gray-100 rounded-lg p-4 min-w-64">
-                                                <h3 className="text-lg font-semibold">{operation.name}</h3>
-                                                <div className="flex items-center gap-4 mt-2">
-                                                    <p>Temps :</p>
-                                                    <input
-                                                        type="time"
-                                                        className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
-                                                        value={operation.time}
-                                                        onChange={(e) => handleOperationChange(index, 'time', e.target.value)}
-                                                    />
-                                                </div>
-                                                <div className="flex items-center gap-4 mt-2">
-                                                    <p>Poste :</p>
-                                                    <select
-                                                        className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
-                                                        value={operation.post.id}
-                                                        onChange={(e) => handleOperationChange(index, 'post', e.target.value)}
-                                                    >
-                                                        {posts.map((post) => (
-                                                            <option key={post.id} value={post.id}>{post.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div className="flex items-center gap-4 mt-2">
-                                                    <p>Machine :</p>
-                                                    <select
-                                                        className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-32"
-                                                        value={operation.machine.id}
-                                                        onChange={(e) => handleOperationChange(index, 'machine', e.target.value)}
-                                                    >
-                                                        {machines.map((machine) => (
-                                                            <option key={machine.id} value={machine.id}>{machine.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="flex justify-end gap-4 mt-4">
-                                        <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-                                        >
-                                            Produire
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={closeProduceModal}
-                                            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
-                                        >
-                                            Fermer
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
                 </div>
             </div>
 
-            {/* Création de gamme */}
-            <Modal isOpen={isCreateModalOpen} onRequestClose={closeModals} ariaHideApp={false} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white rounded-lg p-8 max-w-screen-lg overflow-x-auto max-h-screen">
-                    <h2 className="text-2xl font-semibold mb-4">Créer une gamme</h2>
-                    <form onSubmit={(e) => { e.preventDefault(); handleCreate(); }}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Pièce</label>
-                            <select
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="piece_id"
-                                value={data.piece_id}
-                                onChange={(e) => setData({ ...data, piece_id: e.target.value })}
-                            >
-                                <option value="">Saisir une pièce</option>
-                                {pieces.map((piece) => (
-                                    <option value={piece.id}>{piece.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Responsable</label>
-                            <select
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="user_id"
-                                value={data.user_id}
-                                onChange={(e) => setData({ ...data, user_id: e.target.value })}
-                            >
-                                <option value="">Saisir un responsable</option>
-                                {users.map((user) => (
-                                    <option value={user.id}>{user.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Composants</label>
-                            {data.range_operations.map((range_operation, index) => (
-                                <div key={index} className="flex items-center space-x-2 mt-1">
-                                    <select value={range_operation.operation_id} onChange={(e) => {
-                                        const updatedRangeOperations = [...data.range_operations];
-                                        updatedRangeOperations[index].operation_id = e.target.value;
-                                        setData({ ...data, range_operations: updatedRangeOperations });
-                                    }} className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
-                                        <option value="">Sélectionner une opérations</option>
-                                        {operations.map(operation => (
-                                            <option key={operation.id} value={String(operation.id)}>{operation.name}</option>
-                                        ))}
-                                    </select>
-                                    <button type="button" onClick={() => {
-                                        const updatedPieceRefs = data.range_operations.filter((_, i) => i !== index);
-                                        setData({ ...data, range_operations: updatedPieceRefs });
-                                    }} className="border border-solid border-red-600 text-red-600 px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Supprimer</button>
-                                </div>
+            {/* Modal pour afficher les détails d'une gamme */}
+            {selectedRange && (
+                <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="Opération"
+                    className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
+                >
+                    <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
+                        <h2 className="text-2xl font-semibold mb-4">Opérations</h2>
+                        <ul className="space-y-4">
+                            {selectedRange.operations.map((operation) => (
+                                <li key={operation.id} className="bg-gray-100 rounded-lg p-4">
+                                    <h3 className="text-lg font-semibold">{operation.name}</h3>
+                                    <p>Poste: {operation.post.name}</p>
+                                    <p>Machine: {operation.machine.name}</p>
+                                    <p>Temps: {operation.time}</p>
+                                </li>
                             ))}
-                            <button type="button" onClick={() => {
-                                const updatedRangeOperations = [...data.range_operations, { operation_id: ''}];
-                                setData({ ...data, range_operations: updatedRangeOperations });
-                            }} className="mt-2 border border-solid border-black text-black px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Ajouter une opération</button>
-                        </div>
-                        <div className="flex justify-end">
-                            <button type="button" onClick={closeModals} className="mr-2 border border-solid border-black text-black px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Annuler</button>
-                            <button type="submit" className="border border-solid border-green-600 text-green-600 px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Ajouter</button>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-
-            {/* Modification de gamme */}
-            <Modal isOpen={isEditModalOpen} onRequestClose={closeModals} ariaHideApp={false} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white rounded-lg p-8 max-w-screen-lg overflow-x-auto max-h-screen">
-                    <h2 className="text-2xl font-semibold mb-4">Modifier la gamme</h2>
-                    <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Pièce</label>
-                            <select
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="piece_id"
-                                value={data.piece_id}
-                                onChange={(e) => setData({ ...data, piece_id: e.target.value })}
-                            >
-                                <option value="">Saisir une pièce</option>
-                                {pieces.map((piece) => (
-                                    <option value={piece.id}>{piece.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Responsable</label>
-                            <select
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="user_id"
-                                value={data.user_id}
-                                onChange={(e) => setData({ ...data, user_id: e.target.value })}
-                            >
-                                <option value="">Saisir un responsable</option>
-                                {users.map((user) => (
-                                    <option value={user.id}>{user.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700">Composants</label>
-                            {data.range_operations.map((range_operation, index) => (
-                                <div key={index} className="flex items-center space-x-2 mt-1">
-                                    <select value={range_operation.operation_id} onChange={(e) => {
-                                        const updatedRangeOperations = [...data.range_operations];
-                                        updatedRangeOperations[index].operation_id = e.target.value;
-                                        setData({ ...data, range_operations: updatedRangeOperations });
-                                    }} className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
-                                        <option value="">Sélectionner une opérations</option>
-                                        {operations.map(operation => (
-                                            <option key={operation.id} value={String(operation.id)}>{operation.name}</option>
-                                        ))}
-                                    </select>
-                                    <button type="button" onClick={() => {
-                                        const updatedPieceRefs = data.range_operations.filter((_, i) => i !== index);
-                                        setData({ ...data, range_operations: updatedPieceRefs });
-                                    }} className="border border-solid border-red-600 text-red-600 px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Supprimer</button>
-                                </div>
-                            ))}
-                            <button type="button" onClick={() => {
-                                const updatedRangeOperations = [...data.range_operations, { operation_id: ''}];
-                                setData({ ...data, range_operations: updatedRangeOperations });
-                            }} className="mt-2 border border-solid border-black text-black px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Ajouter une opération</button>
-                        </div>
-                        <div className="flex justify-end">
-                            <button type="button" onClick={closeModals} className="mr-2 border border-solid border-black text-black px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Annuler</button>
-                            <button type="submit" className="border border-solid border-green-600 text-green-600 px-4 py-2 rounded-md hover:bg-gray-100 bg-white">Modifier</button>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-
-            {/* Suppression de gamme */}
-            <Modal isOpen={isDeleteModalOpen} onRequestClose={closeModals} ariaHideApp={false} className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white rounded-lg p-8 max-w-screen-lg">
-                    <h2 className="text-2xl font-semibold mb-4">Confirmer la suppression de la gamme</h2>
-                    <p className="text-gray-700 mb-4">Êtes-vous sûr de vouloir supprimer cette gamme ? Cette action est irréversible.</p>
-                    <div className="flex justify-end">
-                        <button onClick={closeModals} className="mr-2 bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring focus:border-gray-300">Annuler</button>
-                        <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300">Supprimer</button>
+                        </ul>
+                        <button
+                            onClick={closeModal}
+                            className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                        >
+                            Fermer
+                        </button>
                     </div>
+                </Modal>
+            )}
+
+            {/* Modal pour la production */}
+            {selectedRange && (
+                <Modal
+                    isOpen={isProduceModalOpen}
+                    onRequestClose={closeProduceModal}
+                    contentLabel="Produire"
+                    className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
+                >
+                    <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
+                        <h2 className="text-2xl font-semibold mb-4">Produire</h2>
+                        <form onSubmit={handleCreateProduce}>
+                            <div className="grid grid-cols-1 gap-4">
+                                {selectedRange.operations.map((operation, index) => (
+                                    <div key={operation.id} className="flex-shrink-0 bg-gray-100 rounded-lg p-4 min-w-64">
+                                        <h3 className="text-lg font-semibold">{operation.name}</h3>
+                                        <div className="mt-4">
+                                            <label htmlFor={`time-${index}`} className="block text-sm font-medium text-gray-700">
+                                                Temps
+                                            </label>
+                                            <input
+                                                id={`time-${index}`}
+                                                type="text"
+                                                value={operation.time}
+                                                onChange={(e) => handleOperationChange(index, 'time', e.target.value)}
+                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                            />
+                                        </div>
+                                        <div className="mt-4">
+                                            <label htmlFor={`post-${index}`} className="block text-sm font-medium text-gray-700">
+                                                Poste
+                                            </label>
+                                            <select
+                                                id={`post-${index}`}
+                                                value={operation.post.id}
+                                                onChange={(e) => handleOperationChange(index, 'post', e.target.value)}
+                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                            >
+                                                <option value="">Sélectionner un poste</option>
+                                                {posts.map((post) => (
+                                                    <option key={post.id} value={post.id}>
+                                                        {post.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="mt-4">
+                                            <label htmlFor={`machine-${index}`} className="block text-sm font-medium text-gray-700">
+                                                Machine
+                                            </label>
+                                            <select
+                                                id={`machine-${index}`}
+                                                value={operation.machine.id}
+                                                onChange={(e) => handleOperationChange(index, 'machine', e.target.value)}
+                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                            >
+                                                <option value="">Sélectionner une machine</option>
+                                                {filteredMachinesByPost(operation.post.id).map((machine) => (
+                                                    <option key={machine.id} value={machine.id}>
+                                                        {machine.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <button
+                                type="submit"
+                                className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                            >
+                                Créer
+                            </button>
+                            <button
+                                type="button"
+                                onClick={closeProduceModal}
+                                className="mt-6 ml-4 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                            >
+                                Annuler
+                            </button>
+                        </form>
+                    </div>
+                </Modal>
+            )}
+
+            {/* Modal pour la création */}
+            <Modal
+                isOpen={isCreateModalOpen}
+                onRequestClose={closeModals}
+                contentLabel="Créer une gamme"
+                className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
+            >
+                <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
+                    <h2 className="text-2xl font-semibold mb-4">Créer une gamme</h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        <div>
+                            <label htmlFor="piece_id" className="block text-sm font-medium text-gray-700">
+                                Pièce
+                            </label>
+                            <select
+                                id="piece_id"
+                                value={data.piece_id}
+                                onChange={(e) => setData('piece_id', e.target.value)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                            >
+                                <option value="">Sélectionner une pièce</option>
+                                {pieces.map((piece) => (
+                                    <option key={piece.id} value={piece.id}>
+                                        {piece.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="user_id" className="block text-sm font-medium text-gray-700">
+                                Responsable
+                            </label>
+                            <select
+                                id="user_id"
+                                value={data.user_id}
+                                onChange={(e) => setData('user_id', e.target.value)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                            >
+                                <option value="">Sélectionner un responsable</option>
+                                {users.map((user) => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Opérations
+                            </label>
+                            {data.range_operations.map((rangeOperation, index) => (
+                                <div key={index} className="flex items-center space-x-2 mt-2">
+                                    <select
+                                        value={rangeOperation.operation_id}
+                                        onChange={(e) => {
+                                            const updatedRangeOperations = data.range_operations.map((op, idx) =>
+                                                idx === index ? { ...op, operation_id: e.target.value } : op
+                                            );
+                                            setData('range_operations', updatedRangeOperations);
+                                        }}
+                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                    >
+                                        <option value="">Sélectionner une opération</option>
+                                        {operations.map((operation) => (
+                                            <option key={operation.id} value={operation.id}>
+                                                {operation.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {index > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const updatedRangeOperations = data.range_operations.filter((_, idx) => idx !== index);
+                                                setData('range_operations', updatedRangeOperations);
+                                            }}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            Supprimer
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={() => setData('range_operations', [...data.range_operations, { operation_id: '' }])}
+                                className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                            >
+                                Ajouter une opération
+                            </button>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleCreate}
+                        className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                    >
+                        Créer
+                    </button>
+                    <button
+                        onClick={closeModals}
+                        className="mt-6 ml-4 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                    >
+                        Annuler
+                    </button>
                 </div>
             </Modal>
+
+            {/* Modal pour la modification */}
+            {currentRange && (
+                <Modal
+                    isOpen={isEditModalOpen}
+                    onRequestClose={closeModals}
+                    contentLabel="Modifier une gamme"
+                    className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
+                >
+                    <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
+                        <h2 className="text-2xl font-semibold mb-4">Modifier une gamme</h2>
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <label htmlFor="piece_id" className="block text-sm font-medium text-gray-700">
+                                    Pièce
+                                </label>
+                                <select
+                                    id="piece_id"
+                                    value={data.piece_id}
+                                    onChange={(e) => setData('piece_id', e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                >
+                                    <option value="">Sélectionner une pièce</option>
+                                    {pieces.map((piece) => (
+                                        <option key={piece.id} value={piece.id}>
+                                            {piece.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="user_id" className="block text-sm font-medium text-gray-700">
+                                    Responsable
+                                </label>
+                                <select
+                                    id="user_id"
+                                    value={data.user_id}
+                                    onChange={(e) => setData('user_id', e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                >
+                                    <option value="">Sélectionner un responsable</option>
+                                    {users.map((user) => (
+                                        <option key={user.id} value={user.id}>
+                                            {user.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Opérations
+                                </label>
+                                {data.range_operations.map((rangeOperation, index) => (
+                                    <div key={index} className="flex items-center space-x-2 mt-2">
+                                        <select
+                                            value={rangeOperation.operation_id}
+                                            onChange={(e) => {
+                                                const updatedRangeOperations = data.range_operations.map((op, idx) =>
+                                                    idx === index ? { ...op, operation_id: e.target.value } : op
+                                                );
+                                                setData('range_operations', updatedRangeOperations);
+                                            }}
+                                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                        >
+                                            <option value="">Sélectionner une opération</option>
+                                            {operations.map((operation) => (
+                                                <option key={operation.id} value={operation.id}>
+                                                    {operation.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {index > 0 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const updatedRangeOperations = data.range_operations.filter((_, idx) => idx !== index);
+                                                    setData('range_operations', updatedRangeOperations);
+                                                }}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                Supprimer
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setData('range_operations', [...data.range_operations, { operation_id: '' }])}
+                                    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                                >
+                                    Ajouter une opération
+                                </button>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleUpdate}
+                            className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                        >
+                            Modifier
+                        </button>
+                        <button
+                            onClick={closeModals}
+                            className="mt-6 ml-4 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                        >
+                            Annuler
+                        </button>
+                    </div>
+                </Modal>
+            )}
+
+            {/* Modal pour la suppression */}
+            {currentRange && (
+                <Modal
+                    isOpen={isDeleteModalOpen}
+                    onRequestClose={closeModals}
+                    contentLabel="Supprimer une gamme"
+                    className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
+                >
+                    <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
+                        <h2 className="text-2xl font-semibold mb-4">Supprimer une gamme</h2>
+                        <p>Êtes-vous sûr de vouloir supprimer cette gamme ? Cette action est irréversible.</p>
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                onClick={handleDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700"
+                            >
+                                Supprimer
+                            </button>
+                            <button
+                                onClick={closeModals}
+                                className="ml-4 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                            >
+                                Annuler
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </AuthenticatedLayout>
     );
 }

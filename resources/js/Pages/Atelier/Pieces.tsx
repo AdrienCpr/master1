@@ -1,9 +1,20 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { PageProps, Piece, PieceRef } from '@/types';
+import { PageProps, PieceRef, Range } from '@/types';
 import { useState } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
+import {toast} from "react-toastify";
+
+export interface Piece {
+    id: number;
+    ref: string;
+    name: string;
+    type: string;
+    price: number;
+    ranges: Range[]
+    pieces_to_create: Piece[]
+}
 
 interface PiecesProps extends PageProps {
     pieces: Piece[];
@@ -61,14 +72,26 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
 
     const handleCreate = () => {
         post(route('pieces.store'), {
-            onSuccess: () => closeModals(),
+            onSuccess: () => {
+                closeModals();
+                toast.success('Pièce ajoutée avec succès!');
+            },
+            onError: (errors) => {
+                toast.error('Erreur lors de l\'ajout de la pièce.');
+            }
         });
     };
 
     const handleUpdate = () => {
         if (currentPiece) {
             put(route('pieces.update', currentPiece.id), {
-                onSuccess: () => closeModals(),
+                onSuccess: () => {
+                    closeModals();
+                    toast.success('Modification enregistrée avec succès!');
+                },
+                onError: (errors) => {
+                    toast.error('Erreur lors de la modification de la pièce.');
+                }
             });
         }
     };
@@ -76,7 +99,13 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
     const handleDelete = () => {
         if (currentPiece) {
             destroy(route('pieces.destroy', currentPiece.id), {
-                onSuccess: () => closeModals(),
+                onSuccess: () => {
+                    closeModals();
+                    toast.success('Pièce supprimée avec succès!');
+                },
+                onError: (errors) => {
+                    toast.error('Erreur lors de la suppression de la pièce.');
+                }
             });
         }
     };
@@ -95,7 +124,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Pieces Atelier</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Pièces</h2>}
         >
             <Head title="Pieces" />
 
@@ -143,7 +172,9 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                                     </td>
                                     <td className="px-4 py-3 text-center border border-gray-200 dark:border-gray-700">
                                         <button className="text-gray-500 hover:text-gray-700 mr-2" onClick={() => openEditModal(piece)}><FaEdit /></button>
-                                        <button className="text-red-500 hover:text-red-700" onClick={() => openDeleteModal(piece)}><FaTrash /></button>
+                                        {piece.ranges.length === 0 && piece.pieces_to_create.length === 0 && (
+                                            <button className="text-red-500 hover:text-red-700" onClick={() => openDeleteModal(piece)}><FaTrash /></button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

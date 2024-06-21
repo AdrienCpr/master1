@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Machine;
+use App\Models\Post;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -36,9 +37,14 @@ class MachineSeeder extends Seeder
             'Imprimante 3D'
         ];
 
+        $postIds = Post::query()->pluck('id')->toArray();
+
         foreach ($machines as $machine) {
+            $randomPostId = $postIds[array_rand($postIds)];
+
             Machine::query()->create([
                 'name' => $machine,
+                'post_id' => $randomPostId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

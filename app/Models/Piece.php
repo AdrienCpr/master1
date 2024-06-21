@@ -15,4 +15,17 @@ class Piece extends Model
     {
         return $this->hasMany(Range::class);
     }
+    public function piecesNeeded(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Piece::class, 'piece_refs', 'piece_to_create_id', 'piece_need_id')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
+    public function piecesToCreate(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Piece::class, 'piece_refs', 'piece_need_id', 'piece_to_create_id')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }

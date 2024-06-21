@@ -3,7 +3,10 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AtelierController;
 use App\Http\Controllers\ComptabiliteController;
+use App\Http\Controllers\MachineController;
+use App\Http\Controllers\OperationController;
 use App\Http\Controllers\PieceController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RangeController;
 use Illuminate\Foundation\Application;
@@ -43,8 +46,26 @@ Route::prefix('atelier')
 
         Route::post('/ranges/produce', [RangeController::class, 'produce'])->name('ranges.produce');
 
-
         Route::get('/ranges-history', [AtelierController::class, 'rangesHistory'])->name('ranges-history-atelier');
+
+        Route::get('/operations', [AtelierController::class, 'operations'])->name('operations-atelier');
+        Route::post('/operations', [OperationController::class, 'store'])->name('operations.store');
+        Route::get('/operations/{operation}/edit', [OperationController::class, 'edit'])->name('operations.edit');
+        Route::put('/operations/{operation}', [OperationController::class, 'update'])->name('operations.update');
+        Route::delete('/operations/{operation}', [OperationController::class, 'destroy'])->name('operations.destroy');
+
+        Route::get('/posts', [AtelierController::class, 'posts'])->name('posts-atelier');
+        Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+        Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+        Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+        Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+        Route::get('/machines', [AtelierController::class, 'machines'])->name('machines-atelier');
+        Route::post('/machines', [MachineController::class, 'store'])->name('machines.store');
+        Route::get('/machines/{machine}/edit', [MachineController::class, 'edit'])->name('machines.edit');
+        Route::put('/machines/{machine}', [MachineController::class, 'update'])->name('machines.update');
+        Route::delete('/machines/{machine}', [MachineController::class, 'destroy'])->name('machines.destroy');
+
     });
 
 Route::prefix('comptabilite')

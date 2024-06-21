@@ -7,7 +7,8 @@ export default function Guest({ children }: PropsWithChildren) {
         <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
                 <Link href="/">
-                    <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
+                    <img src={"https://cdn-icons-png.flaticon.com/512/140/140513.png"} className="w-20 h-20 fill-current text-gray-500" />
+                    {/*<ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />*/}
                 </Link>
             </div>
 

@@ -12,9 +12,9 @@ class Operation extends Model
 
     protected $guarded = [];
 
-    public function range(): BelongsTo
+    public function ranges(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsTo(Range::class);
+        return $this->belongsToMany(Range::class, 'range_operations', 'operation_id', 'range_id');
     }
 
     public function post(): BelongsTo

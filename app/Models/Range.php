@@ -24,8 +24,7 @@ class Range extends Model
     }
     public function operations(): BelongsToMany
     {
-        return $this->belongsToMany(Operation::class, 'range_operations')
-            ->withTimestamps();
+        return $this->belongsToMany(Operation::class, 'range_operations', 'range_id', 'operation_id');
     }
 
     public function rangeProduces(): HasMany

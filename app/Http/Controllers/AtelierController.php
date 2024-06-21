@@ -6,6 +6,7 @@ use App\Models\Machine;
 use App\Models\Operation;
 use App\Models\Piece;
 use App\Models\PieceRef;
+use App\Models\Post;
 use App\Models\Range;
 use App\Models\RangeProduce;
 use App\Models\User;
@@ -17,7 +18,7 @@ class AtelierController extends Controller
     public function pieces(): \Inertia\Response
     {
         return Inertia::render('Atelier/Pieces',[
-            'pieces' => Piece::query()->get(),
+            'pieces' => Piece::query()->with(['ranges','piecesToCreate'])->get(),
             'piecesRef' => PieceRef::query()->get()
         ]);
     }
@@ -71,6 +72,30 @@ class AtelierController extends Controller
 
         return Inertia::render('Atelier/RangesHistory', [
             'rangesProduce' => $rangesProduce,
+        ]);
+    }
+
+    public function operations(): \Inertia\Response
+    {
+        return Inertia::render('Atelier/Operations',[
+            'operations' => Operation::query()->with("ranges")->get(),
+            'posts' => Post::query()->get(),
+            'machines' => Machine::query()->get(),
+        ]);
+    }
+
+    public function posts(): \Inertia\Response
+    {
+        return Inertia::render('Atelier/Posts',[
+            'posts' => Post::query()->with("machines")->get()
+        ]);
+    }
+
+    public function machines(): \Inertia\Response
+    {
+        return Inertia::render('Atelier/Machines',[
+            'machines' => Machine::query()->get(),
+            'posts' => Post::query()->get()
         ]);
     }
 }

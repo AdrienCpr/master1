@@ -9,7 +9,6 @@ import { User } from '@/types';
 export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
-    console.log(user.role.name)
     const renderNavLinks = () => {
         switch (user.role.name) {
             case 'atelier':
@@ -61,6 +60,15 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             </NavLink>
                             <NavLink href={route('ranges-history-atelier')} active={route().current('ranges-history-atelier')}>
                                 Historique des gammes
+                            </NavLink>
+                            <NavLink href={route('operations-atelier')} active={route().current('operations-atelier')}>
+                                Opérations
+                            </NavLink>
+                            <NavLink href={route('posts-atelier')} active={route().current('posts-atelier')}>
+                                Postes
+                            </NavLink>
+                            <NavLink href={route('machines-atelier')} active={route().current('machines-atelier')}>
+                                Machines
                             </NavLink>
                         </div>
                     </div>
@@ -146,6 +154,15 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </ResponsiveNavLink>
                         <ResponsiveNavLink href={route('ranges-history-atelier')} active={route().current('pieces-history-atelier')}>
                             Historique des gammes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('operations-atelier')} active={route().current('operations-atelier')}>
+                            Opérations
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('posts-atelier')} active={route().current('posts-atelier')}>
+                            Postes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink href={route('machines-atelier')} active={route().current('machines-atelier')}>
+                            Machines
                         </ResponsiveNavLink>
                     </>
                 );
