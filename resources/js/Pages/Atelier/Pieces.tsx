@@ -1,10 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps, PieceRef, Range } from '@/types';
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 export interface Piece {
     id: number;
@@ -211,6 +211,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 id="type"
                                 value={data.type}
+                                required
                                 onChange={(e) => setData({ ...data, type: e.target.value })}
                             >
                                 <option value="">Saisir un type</option>
@@ -221,7 +222,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Prix</label>
-                            <input type="number" value={data.price} onChange={(e) => setData({ ...data, price: Number(e.target.value) })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
+                            <input type="number" value={data.price} aria-required onChange={(e) => setData({ ...data, price: Number(e.target.value) })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Composants</label>
@@ -231,7 +232,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                                         const updatedPieceRefs = [...data.piece_refs];
                                         updatedPieceRefs[index].piece_need_id = e.target.value;
                                         setData({ ...data, piece_refs: updatedPieceRefs });
-                                    }} className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
+                                    }} required className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
                                         <option value="">Sélectionner un composant</option>
                                         {pieces.map(piece => (
                                             <option key={piece.id} value={String(piece.id)}>{piece.name}</option>
@@ -268,11 +269,11 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                     <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Référence</label>
-                            <input type="text" value={data.ref} onChange={(e) => setData({ ...data, ref: e.target.value })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
+                            <input type="text" aria-required value={data.ref} onChange={(e) => setData({ ...data, ref: e.target.value })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Nom</label>
-                            <input type="text" value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
+                            <input type="text" aria-required value={data.name} onChange={(e) => setData({ ...data, name: e.target.value })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Type</label>
@@ -280,6 +281,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 id="type"
                                 value={data.type}
+                                required
                                 onChange={(e) => setData({ ...data, type: e.target.value })}
                             >
                                 <option value="">Saisir un type</option>
@@ -290,7 +292,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Prix</label>
-                            <input type="number" value={data.price} onChange={(e) => setData({ ...data, price: Number(e.target.value) })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
+                            <input type="number" aria-required value={data.price} onChange={(e) => setData({ ...data, price: Number(e.target.value) })} required className="border border-gray-300 rounded-md px-3 py-2 mt-1 w-full focus:outline-none focus:ring focus:border-blue-300" />
                         </div>
                         <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Composants</label>
@@ -300,7 +302,9 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                                         const updatedPieceRefs = [...data.piece_refs];
                                         updatedPieceRefs[index].piece_need_id = e.target.value;
                                         setData({ ...data, piece_refs: updatedPieceRefs });
-                                    }} className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
+                                    }}
+                                        required
+                                        className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:border-blue-300">
                                         <option value="">Sélectionner un composant</option>
                                         {pieces.map(piece => (
                                             <option key={piece.id} value={String(piece.id)}>{piece.name}</option>
@@ -341,6 +345,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                     </div>
                 </div>
             </Modal>
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

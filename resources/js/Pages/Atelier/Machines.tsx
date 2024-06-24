@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps, Machine, Post } from '@/types';
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import { toast, ToastContainer } from 'react-toastify';
@@ -96,8 +96,6 @@ export default function Machines({ auth, machines, posts }: MachinesProps) {
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Machines</h2>}
         >
             <Head title="Machines" />
-
-            <ToastContainer />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -214,6 +212,7 @@ export default function Machines({ auth, machines, posts }: MachinesProps) {
                     </div>
                 </div>
             </Modal>
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

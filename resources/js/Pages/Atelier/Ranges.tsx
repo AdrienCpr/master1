@@ -5,7 +5,8 @@ import React, { useState } from "react";
 import { PencilIcon, SearchIcon, TrashIcon } from "lucide-react";
 import Modal from "react-modal";
 import { Inertia } from "@inertiajs/inertia";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 type Operation = {
     id: number;
@@ -94,6 +95,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
 
     const editRange = (id: number) => {
         const range = ranges.find(range => range.id === id);
+        console.log(range)
         if (range) {
             setData({
                 piece_id: range.piece.id.toString(),
@@ -160,12 +162,12 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                 formData.append(`operations[${index}][id]`, operation.id.toString());
                 formData.append(`operations[${index}][time]`, operation.time);
                 formData.append(`operations[${index}][post_id]`, operation.post.id.toString());
-                formData.append(`operations[${index}][machine_id]`, operation.machine.id.toString());
+                formData.append(`operations[${index}][machine_id]`, operation.machine.toString());
             });
 
             Inertia.post('/atelier/ranges/produce', formData, {
                 onSuccess: () => {
-                    closeModals();
+                    closeProduceModal();
                     toast.success('Gamme produite avec succès!');
                 },
                 onError: (errors) => {
@@ -306,17 +308,19 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                     contentLabel="Opération"
                     className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
                 >
-                    <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
+                    <div className="bg-white rounded-lg p-8 max-w-3xl overflow-y-auto">
                         <h2 className="text-2xl font-semibold mb-4">Opérations</h2>
                         <ul className="space-y-4">
-                            {selectedRange.operations.map((operation) => (
-                                <li key={operation.id} className="bg-gray-100 rounded-lg p-4">
-                                    <h3 className="text-lg font-semibold">{operation.name}</h3>
-                                    <p>Poste: {operation.post.name}</p>
-                                    <p>Machine: {operation.machine.name}</p>
-                                    <p>Temps: {operation.time}</p>
-                                </li>
-                            ))}
+                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                {selectedRange.operations.map((operation) => (
+                                    <li key={operation.id} className="bg-gray-100 rounded-lg p-4">
+                                        <h3 className="text-lg font-semibold">{operation.name}</h3>
+                                        <p>Poste: {operation.post.name}</p>
+                                        <p>Machine: {operation.machine.name}</p>
+                                        <p>Temps: {operation.time}</p>
+                                    </li>
+                                ))}
+                            </div>
                         </ul>
                         <button
                             onClick={closeModal}
@@ -336,78 +340,82 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                     contentLabel="Produire"
                     className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
                 >
-                    <div className="bg-white rounded-lg p-6 w-full max-w-3xl">
-                        <h2 className="text-2xl font-semibold mb-4">Produire</h2>
-                        <form onSubmit={handleCreateProduce}>
-                            <div className="grid grid-cols-1 gap-4">
-                                {selectedRange.operations.map((operation, index) => (
-                                    <div key={operation.id} className="flex-shrink-0 bg-gray-100 rounded-lg p-4 min-w-64">
-                                        <h3 className="text-lg font-semibold">{operation.name}</h3>
-                                        <div className="mt-4">
-                                            <label htmlFor={`time-${index}`} className="block text-sm font-medium text-gray-700">
-                                                Temps
-                                            </label>
-                                            <input
-                                                id={`time-${index}`}
-                                                type="text"
-                                                value={operation.time}
-                                                onChange={(e) => handleOperationChange(index, 'time', e.target.value)}
-                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                                            />
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-white rounded-lg p-8 max-w-3xl overflow-y-auto">                        <h2 className="text-2xl font-semibold mb-4">Produire</h2>
+                            <form onSubmit={handleCreateProduce}>
+                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    {selectedRange.operations.map((operation, index) => (
+                                        <div key={operation.id} className="bg-gray-100 rounded-lg p-4">
+                                            <h3 className="text-lg font-semibold">{operation.name}</h3>
+                                            <div className="mt-4">
+                                                <label htmlFor={`time-${index}`} className="block text-sm font-medium text-gray-700">
+                                                    Temps
+                                                </label>
+                                                <input
+                                                    id={`time-${index}`}
+                                                    type="text"
+                                                    value={operation.time}
+                                                    required
+                                                    onChange={(e) => handleOperationChange(index, 'time', e.target.value)}
+                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                                />
+                                            </div>
+                                            <div className="mt-4">
+                                                <label htmlFor={`post-${index}`} className="block text-sm font-medium text-gray-700">
+                                                    Poste
+                                                </label>
+                                                <select
+                                                    id={`post-${index}`}
+                                                    value={operation.post.id}
+                                                    required
+                                                    onChange={(e) => handleOperationChange(index, 'post', e.target.value)}
+                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                                >
+                                                    <option value="">Sélectionner un poste</option>
+                                                    {posts.map((post) => (
+                                                        <option key={post.id} value={post.id}>
+                                                            {post.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="mt-4">
+                                                <label htmlFor={`machine-${index}`} className="block text-sm font-medium text-gray-700">
+                                                    Machine
+                                                </label>
+                                                <select
+                                                    id={`machine-${index}`}
+                                                    value={operation.machine.id}
+                                                    required
+                                                    onChange={(e) => handleOperationChange(index, 'machine', e.target.value)}
+                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                                >
+                                                    <option value="">Sélectionner une machine</option>
+                                                    {filteredMachinesByPost(operation.post.id).map((machine) => (
+                                                        <option key={machine.id} value={machine.id}>
+                                                            {machine.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div className="mt-4">
-                                            <label htmlFor={`post-${index}`} className="block text-sm font-medium text-gray-700">
-                                                Poste
-                                            </label>
-                                            <select
-                                                id={`post-${index}`}
-                                                value={operation.post.id}
-                                                onChange={(e) => handleOperationChange(index, 'post', e.target.value)}
-                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                                            >
-                                                <option value="">Sélectionner un poste</option>
-                                                {posts.map((post) => (
-                                                    <option key={post.id} value={post.id}>
-                                                        {post.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="mt-4">
-                                            <label htmlFor={`machine-${index}`} className="block text-sm font-medium text-gray-700">
-                                                Machine
-                                            </label>
-                                            <select
-                                                id={`machine-${index}`}
-                                                value={operation.machine.id}
-                                                onChange={(e) => handleOperationChange(index, 'machine', e.target.value)}
-                                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                                            >
-                                                <option value="">Sélectionner une machine</option>
-                                                {filteredMachinesByPost(operation.post.id).map((machine) => (
-                                                    <option key={machine.id} value={machine.id}>
-                                                        {machine.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <button
-                                type="submit"
-                                className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
-                            >
-                                Créer
-                            </button>
-                            <button
-                                type="button"
-                                onClick={closeProduceModal}
-                                className="mt-6 ml-4 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
-                            >
-                                Annuler
-                            </button>
-                        </form>
+                                    ))}
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="mt-6 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:bg-gray-800"
+                                >
+                                    Créer
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={closeProduceModal}
+                                    className="mt-6 ml-4 px-4 py-2 bg-gray-300 text-black rounded-md hover:bg-gray-400 focus:outline-none focus:bg-gray-400"
+                                >
+                                    Annuler
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </Modal>
             )}
@@ -430,6 +438,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                 id="piece_id"
                                 value={data.piece_id}
                                 onChange={(e) => setData('piece_id', e.target.value)}
+                                required
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                             >
                                 <option value="">Sélectionner une pièce</option>
@@ -448,6 +457,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                 id="user_id"
                                 value={data.user_id}
                                 onChange={(e) => setData('user_id', e.target.value)}
+                                required
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                             >
                                 <option value="">Sélectionner un responsable</option>
@@ -466,6 +476,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                 <div key={index} className="flex items-center space-x-2 mt-2">
                                     <select
                                         value={rangeOperation.operation_id}
+                                        required
                                         onChange={(e) => {
                                             const updatedRangeOperations = data.range_operations.map((op, idx) =>
                                                 idx === index ? { ...op, operation_id: e.target.value } : op
@@ -537,6 +548,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                 <select
                                     id="piece_id"
                                     value={data.piece_id}
+                                    required
                                     onChange={(e) => setData('piece_id', e.target.value)}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                                 >
@@ -555,6 +567,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                 <select
                                     id="user_id"
                                     value={data.user_id}
+                                    required
                                     onChange={(e) => setData('user_id', e.target.value)}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                                 >
@@ -574,6 +587,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                     <div key={index} className="flex items-center space-x-2 mt-2">
                                         <select
                                             value={rangeOperation.operation_id}
+                                            required
                                             onChange={(e) => {
                                                 const updatedRangeOperations = data.range_operations.map((op, idx) =>
                                                     idx === index ? { ...op, operation_id: e.target.value } : op
@@ -656,6 +670,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                     </div>
                 </Modal>
             )}
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { Machine, PageProps } from '@/types';
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import { toast, ToastContainer } from 'react-toastify';
@@ -197,6 +197,7 @@ export default function Posts({ auth, posts }: PostsProps) {
                     </div>
                 </div>
             </Modal>
+            <ToastContainer />
         </AuthenticatedLayout>
     );
 }
