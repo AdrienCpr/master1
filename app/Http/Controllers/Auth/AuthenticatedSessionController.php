@@ -40,10 +40,10 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('pieces-atelier', absolute: false));
         }
         if ($role_name === "comptabilite") {
-            return redirect()->intended(route('dashboard-comptabilite', absolute: false));
+            return redirect()->intended(route('quotes-comptabilite', absolute: false));
         }
         if ($role_name === "admin") {
-            return redirect()->intended(route('dashboard-admin', absolute: false));
+            return redirect()->intended(route('users-admin', absolute: false));
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

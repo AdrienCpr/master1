@@ -85,13 +85,13 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink href={route('quotes-comptabilite')} active={route().current('quotes-comptabilite')}>
                                     Devis
                                 </NavLink>
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink href={route('orders-comptabilite')} active={route().current('orders-comptabilite')}>
                                     Factures
                                 </NavLink>
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink href={route('my-orders-comptabilite')} active={route().current('my-orders-comptabilite')}>
                                     Nos achats
                                 </NavLink>
                             </div>
@@ -169,13 +169,13 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             case 'comptabilite':
                 return (
                     <>
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                        <ResponsiveNavLink href={route('quotes-comptabilite')} active={route().current('quotes-comptabilite')}>
                             Devis
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                        <ResponsiveNavLink href={route('orders-comptabilite')} active={route().current('orders-comptabilite')}>
                             Factures
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                        <ResponsiveNavLink href={route('my-orders-comptabilite')} active={route().current('my-orders-comptabilite')}>
                             Nos achats
                         </ResponsiveNavLink>
                     </>

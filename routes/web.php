@@ -5,9 +5,11 @@ use App\Http\Controllers\AtelierController;
 use App\Http\Controllers\ComptabiliteController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PieceController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\RangeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -22,10 +24,10 @@ use Inertia\Inertia;
 //    ]);
 //});
 
-Route::get('/dashboard', function () {
-//    return Inertia::render('Pieces.tsx');
-    return redirect()->route('pieces-atelier');
-})->middleware(['auth', 'verified'])->name('dashboard');
+//Route::get('/dashboard', function () {
+////    return Inertia::render('Pieces.tsx');
+//    return redirect()->route('pieces-atelier');
+//})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('atelier')
     ->middleware(['auth','role:atelier|responsable'])
@@ -71,8 +73,15 @@ Route::prefix('atelier')
 Route::prefix('comptabilite')
     ->middleware(['auth','role:comptabilite'])
     ->group(function () {
-        Route::get('/dashboard', [ComptabiliteController::class, 'dashboard'])->name('dashboard-comptabilite');
-});
+        Route::get('/quotes', [ComptabiliteController::class, 'quotes'])->name('quotes-comptabilite');
+        Route::post('/quotes', [QuoteController::class, 'store'])->name('quotes.store');
+
+        Route::get('/orders', [ComptabiliteController::class, 'quotes'])->name('orders-comptabilite');
+        Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+        Route::get('/my-orders', [ComptabiliteController::class, 'quotes'])->name('my-orders-comptabilite');
+
+    });
 
 Route::prefix('admin')
     ->middleware(['auth','role:admin'])

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\QuotePiece;
 use App\Models\Role;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -26,7 +27,9 @@ class DatabaseSeeder extends Seeder
             OperationSeeder::class,
             RangeOperationSeeder::class,
             RangeProduceSeeder::class,
-            RangeProduceOperationSeeder::class
+            RangeProduceOperationSeeder::class,
+            QuotesSeeder::class,
+            QuotesPiecesSeeder::class
         ]);
     }
 }

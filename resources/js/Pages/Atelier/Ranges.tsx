@@ -345,7 +345,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                             <form onSubmit={handleCreateProduce}>
                                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                     {selectedRange.operations.map((operation, index) => (
-                                        <div key={operation.id} className="bg-gray-100 rounded-lg p-4">
+                                        <div key={operation.id} className="bg-gray-100 rounded-lg p-2 w-auto">
                                             <h3 className="text-lg font-semibold">{operation.name}</h3>
                                             <div className="mt-4">
                                                 <label htmlFor={`time-${index}`} className="block text-sm font-medium text-gray-700">
