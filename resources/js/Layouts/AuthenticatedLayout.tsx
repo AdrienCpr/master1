@@ -91,7 +91,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                 <NavLink href={route('orders-comptabilite')} active={route().current('orders-comptabilite')}>
                                     Factures
                                 </NavLink>
-                                <NavLink href={route('my-orders-comptabilite')} active={route().current('my-orders-comptabilite')}>
+                                <NavLink href={route('company-orders-comptabilite')} active={route().current('my-orders-comptabilite')}>
                                     Nos achats
                                 </NavLink>
                             </div>
@@ -109,7 +109,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
+                                <NavLink href={route('users-admin')} active={route().current('users-admin')}>
                                     Utilisateurs
                                 </NavLink>
                             </div>
@@ -175,7 +175,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         <ResponsiveNavLink href={route('orders-comptabilite')} active={route().current('orders-comptabilite')}>
                             Factures
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink href={route('my-orders-comptabilite')} active={route().current('my-orders-comptabilite')}>
+                        <ResponsiveNavLink href={route('company-orders-comptabilite')} active={route().current('my-orders-comptabilite')}>
                             Nos achats
                         </ResponsiveNavLink>
                     </>
@@ -183,7 +183,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
             case 'admin':
                 return (
                     <>
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
+                        <ResponsiveNavLink href={route('users-admin')} active={route().current('users-admin')}>
                             Utilisateurs
                         </ResponsiveNavLink>
                     </>

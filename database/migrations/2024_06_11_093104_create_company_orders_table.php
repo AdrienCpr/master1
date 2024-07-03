@@ -20,7 +20,7 @@ return new class extends Migration
                 ->onDelete("cascade");
             $table->date("date");
             $table->date("delivery_date");
-            $table->date("real_delivery_date");
+            $table->date("real_delivery_date")->nullable();
             $table->timestamps();
         });
     }

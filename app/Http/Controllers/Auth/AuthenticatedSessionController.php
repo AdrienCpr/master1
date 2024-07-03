@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user()->load('role');
         $role_name = $user->role->name;
 
-        if ($role_name === "atelier") {
+        if ($role_name === "atelier" || $role_name === "responsable") {
             return redirect()->intended(route('pieces-atelier', absolute: false));
         }
         if ($role_name === "comptabilite") {
@@ -46,7 +46,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('users-admin', absolute: false));
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('login', absolute: false));
     }
 
     /**

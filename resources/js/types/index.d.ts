@@ -1,7 +1,10 @@
 export interface User {
     id: number;
     name: string;
+    role_id: number
     role: Role
+    posts: Post[]
+    ranges: Range[]
     email: string;
     email_verified_at: string;
 }

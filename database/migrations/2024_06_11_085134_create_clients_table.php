@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('quotes', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->date("date");
-            $table->date("date_limit")->nullable();
-            $table->unsignedBigInteger('client_id');
-            $table->foreign("client_id")
-                ->references("id")
-                ->on("clients");
+            $table->string("name");
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('quotes');
+        Schema::dropIfExists('clients');
     }
 };

@@ -9,7 +9,8 @@ RUN docker-php-ext-install \
         mbstring \
         pdo_pgsql \
         pgsql \
-        xml
+        xml \
+        zip
 
 # Installation dans votre image de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

@@ -18,8 +18,8 @@ class Quote extends Model
         return $this->hasMany(QuotePiece::class);
     }
 
-    public function user(): BelongsTo
+    public function client(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Client::class);
     }
 }

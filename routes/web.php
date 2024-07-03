@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AtelierController;
+use App\Http\Controllers\CompanyOrderController;
 use App\Http\Controllers\ComptabiliteController;
 use App\Http\Controllers\MachineController;
 use App\Http\Controllers\OperationController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\RangeController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -75,18 +77,30 @@ Route::prefix('comptabilite')
     ->group(function () {
         Route::get('/quotes', [ComptabiliteController::class, 'quotes'])->name('quotes-comptabilite');
         Route::post('/quotes', [QuoteController::class, 'store'])->name('quotes.store');
+        Route::put('/quotes/{quote}/edit', [QuoteController::class, 'edit'])->name('quotes.update');
+        Route::post('/clients', [QuoteController::class, 'client'])->name('clients.store');
 
-        Route::get('/orders', [ComptabiliteController::class, 'quotes'])->name('orders-comptabilite');
+        Route::get('/orders', [ComptabiliteController::class, 'orders'])->name('orders-comptabilite');
         Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+        Route::get('/orders/{id}/download', [OrderController::class, 'download'])->name('orders.download');
 
-        Route::get('/my-orders', [ComptabiliteController::class, 'quotes'])->name('my-orders-comptabilite');
+        Route::get('/company-orders', [ComptabiliteController::class, 'companyOrders'])->name('company-orders-comptabilite');
+        Route::post('/company-orders', [CompanyOrderController::class, 'store'])->name('company-orders.store');
+        Route::put('/company-orders/{companyOrder}/edit', [CompanyOrderController::class, 'edit'])->name('company-orders.update');
+        Route::delete('/company-orders/{companyOrder}', [CompanyOrderController::class, 'delete'])->name('company-orders.destroy');
+        Route::get('/company-orders/{yearMonth}', [CompanyOrderController::class, 'downloadCSV'])->name('company-order.csv');
+        Route::post('/company-orders/suppliers', [CompanyOrderController::class, 'suppliers'])->name('suppliers.store');
+
 
     });
 
 Route::prefix('admin')
     ->middleware(['auth','role:admin'])
     ->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard-admin');
+        Route::get('/users', [AdminController::class, 'users'])->name('users-admin');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
 //Route::middleware('auth')->group(function () {

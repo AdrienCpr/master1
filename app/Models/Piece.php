@@ -28,4 +28,9 @@ class Piece extends Model
             ->withPivot('quantity')
             ->withTimestamps();
     }
+
+    public function companyOrderPieces()
+    {
+        return $this->hasMany(CompanyOrderPiece::class);
+    }
 }

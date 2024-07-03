@@ -3,23 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class OrderController extends Controller
 {
     public function store(Request $request)
     {
-        dd($request->all());
-        $quote = Order::create([
-            'date' => $request['date'],
-            'date_limit' => $request['date_limit'],
-            'user_id' => $request['user_id'],
+        $order = Order::query()->create([
+            'date' => Carbon::today()->toDateString(),
+            'client_id' => $request['client_id'],
         ]);
 
-        foreach ($request['quote_pieces'] as $quotePiece) {
-            $order->pieces()->create($quotePiece);
+        foreach ($request['pieces'] as $orderPiece) {
+            $order->pieces()->create($orderPiece);
         }
 
         return redirect()->route('orders-comptabilite');
+    }
+
+    public function download($id)
+    {
+        $order = Order::with('client', 'pieces.piece')->findOrFail($id);
+
+        $pdf = Pdf::loadView('invoices.pdf', compact('order'));
+
+        return $pdf->download('invoice.pdf');
     }
 }

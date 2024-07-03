@@ -16,7 +16,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '25'),
             'date_limit' => Carbon::create('2024', '07', '25'),
-            'user_id' => 1,
+            'client_id' => 1,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -24,7 +24,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '26'),
             'date_limit' => Carbon::create('2024', '07', '26'),
-            'user_id' => 2,
+            'client_id' => 2,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -32,7 +32,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '27'),
             'date_limit' => Carbon::create('2024', '07', '27'),
-            'user_id' => 3,
+            'client_id' => 3,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -40,7 +40,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -49,7 +49,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -57,7 +57,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -65,7 +65,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -73,7 +73,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -81,7 +81,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -89,7 +89,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -97,7 +97,7 @@ class QuotesSeeder extends Seeder
         Quote::query()->create([
             'date' => Carbon::create('2024', '06', '28'),
             'date_limit' => Carbon::create('2024', '07', '28'),
-            'user_id' => 4,
+            'client_id' => 4,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

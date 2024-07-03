@@ -10,4 +10,13 @@ class CompanyOrder extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+    public function pieces()
+    {
+        return $this->hasMany(CompanyOrderPiece::class);
+    }
 }
