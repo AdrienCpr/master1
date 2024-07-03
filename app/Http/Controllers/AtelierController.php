@@ -43,7 +43,7 @@ class AtelierController extends Controller
 
     public function ranges(): \Inertia\Response
     {
-        $ranges = Range::with(['operations.post', 'operations.machine', 'user', 'piece'])->get();
+        $ranges = Range::with(['operations.post', 'operations.machine', 'user', 'piece','rangeProduces'])->get();
 
         return Inertia::render('Atelier/Ranges', [
             'ranges' => $ranges,
@@ -78,7 +78,7 @@ class AtelierController extends Controller
     public function operations(): \Inertia\Response
     {
         return Inertia::render('Atelier/Operations',[
-            'operations' => Operation::query()->with("ranges")->get(),
+            'operations' => Operation::query()->with(["ranges", "rangeProduceOperations"])->get(),
             'posts' => Post::query()->get(),
             'machines' => Machine::query()->get(),
         ]);
@@ -87,14 +87,14 @@ class AtelierController extends Controller
     public function posts(): \Inertia\Response
     {
         return Inertia::render('Atelier/Posts',[
-            'posts' => Post::query()->with("machines")->get()
+            'posts' => Post::query()->with(["machines", "operations","rangeProduceOperations"])->get()
         ]);
     }
 
     public function machines(): \Inertia\Response
     {
         return Inertia::render('Atelier/Machines',[
-            'machines' => Machine::query()->get(),
+            'machines' => Machine::query()->with(["rangeProduceOperations", "operations"])->get(),
             'posts' => Post::query()->get()
         ]);
     }

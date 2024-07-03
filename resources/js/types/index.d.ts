@@ -1,3 +1,5 @@
+import {RangeProduceOperation} from "@/Pages/Atelier/Operations";
+
 export interface User {
     id: number;
     name: string;
@@ -54,7 +56,9 @@ export interface Post {
 export interface Machine {
     id: number;
     name: string;
-    post_id: number
+    post_id: number;
+    range_produce_operations: RangeProduceOperation[];
+    operations: Operation[]
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

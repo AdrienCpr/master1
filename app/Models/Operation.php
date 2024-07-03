@@ -16,7 +16,10 @@ class Operation extends Model
     {
         return $this->belongsToMany(Range::class, 'range_operations', 'operation_id', 'range_id');
     }
-
+    public function rangeProduceOperations()
+    {
+        return $this->hasMany(RangeProduceOperation::class);
+    }
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);

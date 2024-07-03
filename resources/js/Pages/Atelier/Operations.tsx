@@ -7,6 +7,8 @@ import Modal from 'react-modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+export interface RangeProduceOperation {
+}
 export interface Operation {
     id: number,
     name: string,
@@ -14,6 +16,7 @@ export interface Operation {
     post_id: number,
     machine_id: number,
     ranges: Range[]
+    range_produce_operations: RangeProduceOperation[]
 }
 
 interface OperationsProps extends PageProps {
@@ -147,7 +150,7 @@ export default function Operations({ auth, operations, posts, machines }: Operat
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{machines.find(machine => machine.id === operation.machine_id)?.name || 'N/A'}</td>
                                     <td className="px-4 py-3 text-center border border-gray-200 dark:border-gray-700">
                                         <button className="text-gray-500 hover:text-gray-700 mr-2" onClick={() => openEditModal(operation)}><FaEdit /></button>
-                                        {operation.ranges.length === 0 && (
+                                        {operation.ranges.length === 0 && operation.range_produce_operations?.length === 0 && (
                                             <button className="text-red-500 hover:text-red-700" onClick={() => openDeleteModal(operation)}><FaTrash /></button>
                                         )}
                                     </td>

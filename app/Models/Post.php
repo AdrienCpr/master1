@@ -23,4 +23,14 @@ class Post extends Model
     {
         return $this->hasMany(Machine::class);
     }
+
+    public function operations(): HasMany
+    {
+        return $this->hasMany(Operation::class);
+    }
+
+    public function rangeProduceOperations()
+    {
+        return $this->hasMany(RangeProduceOperation::class);
+    }
 }

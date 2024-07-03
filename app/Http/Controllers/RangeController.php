@@ -7,6 +7,7 @@ use App\Models\RangeOperation;
 use App\Models\RangeProduce;
 use App\Models\RangeProduceOperation;
 use Doctrine\DBAL\Exception\DatabaseDoesNotExist;
+use http\Message;
 use Illuminate\Http\Request;
 
 class RangeController extends Controller
@@ -44,7 +45,7 @@ class RangeController extends Controller
             ]);
         }
 
-        return redirect()->route('ranges-atelier');
+        return redirect()->route('ranges-history-atelier');
     }
 
     public function update(Request $request, Range $range)

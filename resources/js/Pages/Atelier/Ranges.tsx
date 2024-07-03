@@ -6,7 +6,6 @@ import { PencilIcon, SearchIcon, TrashIcon } from "lucide-react";
 import Modal from "react-modal";
 import { Inertia } from "@inertiajs/inertia";
 import {toast, ToastContainer} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
 
 type Operation = {
     id: number;
@@ -16,12 +15,17 @@ type Operation = {
     machine: Machine;
 };
 
+type RangeProduce = {
+    
+}
+
 type Range = {
     id: number;
     name: string;
     user: User;
     piece: Piece;
     operations: Operation[];
+    range_produces: RangeProduce[]
 };
 
 interface RangeProps extends PageProps {
@@ -34,6 +38,7 @@ interface RangeProps extends PageProps {
 }
 
 export default function Ranges({ auth, ranges, posts, machines, pieces, users, operations }: RangeProps) {
+    console.log(ranges)
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedRange, setSelectedRange] = useState<Range | null>(null);
     const [isProduceModalOpen, setIsProduceModalOpen] = useState<boolean>(false);
@@ -152,9 +157,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
         }
     };
 
-    const handleCreateProduce = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleCreateProduce = () => {
         if (selectedRange) {
             const formData = new FormData();
             formData.append(`range_id`, selectedRange.id.toString());
@@ -167,15 +170,13 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
 
             Inertia.post('/atelier/ranges/produce', formData, {
                 onSuccess: () => {
-                    closeProduceModal();
                     toast.success('Gamme produite avec succès!');
+                    closeProduceModal();
                 },
                 onError: (errors) => {
                     toast.error('Erreur lors de la production de la gamme.');
                 }
             });
-
-            closeProduceModal();
         }
     };
 
@@ -214,6 +215,7 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Gammes</h2>}
         >
+            <ToastContainer />
             <Head title="Gammes" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -250,12 +252,14 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                                                 >
                                                     <PencilIcon className="w-5 h-5" />
                                                 </button>
-                                                <button
-                                                    onClick={() => openDeleteModal(range)}
-                                                    className="text-gray-500 hover:text-black focus:outline-none"
-                                                >
-                                                    <TrashIcon className="w-5 h-5" />
-                                                </button>
+                                                {range.range_produces.length === 0 && (
+                                                    <button
+                                                        onClick={() => openDeleteModal(range)}
+                                                        className="text-gray-500 hover:text-black focus:outline-none"
+                                                    >
+                                                        <TrashIcon className="w-5 h-5" />
+                                                    </button>
+                                                )}
                                             </div>
                                         )}
                                         <h2 className="text-xl font-semibold">{range.piece.name}</h2>
@@ -341,8 +345,9 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                     className="fixed inset-0 flex items-center justify-center p-4 bg-gray-500 bg-opacity-75"
                 >
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-white rounded-lg p-8 max-w-3xl overflow-y-auto">                        <h2 className="text-2xl font-semibold mb-4">Produire</h2>
-                            <form onSubmit={handleCreateProduce}>
+                        <div className="bg-white rounded-lg p-8 max-w-3xl overflow-y-auto">
+                            <h2 className="text-2xl font-semibold mb-4">Produire</h2>
+                            <form onSubmit={(e) => { e.preventDefault(); handleCreateProduce(); }}>
                                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                     {selectedRange.operations.map((operation, index) => (
                                         <div key={operation.id} className="bg-gray-100 rounded-lg p-2 w-auto">
@@ -670,7 +675,6 @@ export default function Ranges({ auth, ranges, posts, machines, pieces, users, o
                     </div>
                 </Modal>
             )}
-            <ToastContainer />
         </AuthenticatedLayout>
     );
 }

@@ -16,4 +16,14 @@ class Machine extends Model
     {
         return $this->belongsTo(Post::class);
     }
+
+    public function operations()
+    {
+        return $this->hasMany(Operation::class);
+    }
+
+    public function rangeProduceOperations()
+    {
+        return $this->hasMany(RangeProduceOperation::class);
+    }
 }

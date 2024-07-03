@@ -13,6 +13,7 @@ interface MachinesProps extends PageProps {
 }
 
 export default function Machines({ auth, machines, posts }: MachinesProps) {
+    console.log(machines)
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
@@ -127,7 +128,9 @@ export default function Machines({ auth, machines, posts }: MachinesProps) {
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{posts.find(post => post.id === machine.post_id)?.name || 'N/A'}</td>
                                     <td className="px-4 py-3 text-center border border-gray-200 dark:border-gray-700">
                                         <button className="text-gray-500 hover:text-gray-700 mr-2" onClick={() => openEditModal(machine)}><FaEdit /></button>
-                                        <button className="text-red-500 hover:text-red-700" onClick={() => openDeleteModal(machine)}><FaTrash /></button>
+                                        {machine.range_produce_operations?.length === 0 && machine.operations?.length === 0 && (
+                                            <button className="text-red-500 hover:text-red-700" onClick={() => openDeleteModal(machine)}><FaTrash /></button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

@@ -1,22 +1,26 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router } from '@inertiajs/react';
-import { Machine, PageProps } from '@/types';
+import {Machine, Operation, PageProps} from '@/types';
 import React, { useState } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {RangeProduceOperation} from "@/Pages/Atelier/Operations";
 
 export interface Post {
     id: number;
     name: string;
     machines: Machine[]
+    operations: Operation[]
+    range_produce_operations: RangeProduceOperation[]
 }
 interface PostsProps extends PageProps {
     posts: Post[];
 }
 
 export default function Posts({ auth, posts }: PostsProps) {
+    console.log(posts)
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
@@ -130,7 +134,7 @@ export default function Posts({ auth, posts }: PostsProps) {
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{post.name}</td>
                                     <td className="px-4 py-3 text-center border border-gray-200 dark:border-gray-700">
                                         <button className="text-gray-500 hover:text-gray-700 mr-2" onClick={() => openEditModal(post)}><FaEdit /></button>
-                                        {post.machines.length === 0 && (
+                                        {post.machines.length === 0 && post.operations.length === 0 && post.range_produce_operations?.length === 0 &&(
                                             <button className="text-red-500 hover:text-red-700" onClick={() => openDeleteModal(post)}><FaTrash /></button>
                                         )}
                                     </td>

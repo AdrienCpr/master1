@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export interface Piece {
     id: number;
@@ -160,7 +161,7 @@ export default function Pieces({ auth, pieces, piecesRef }: PiecesProps) {
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{piece.ref}</td>
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{piece.name}</td>
                                     <td className="px-4 py-3 text-left border border-gray-200 dark:border-gray-700">{piece.type}</td>
-                                    <td className="px-4 py-3 text-right border border-gray-200 dark:border-gray-700">${piece.price}</td>
+                                    <td className="px-4 py-3 text-right border border-gray-200 dark:border-gray-700">{piece.price}€</td>
                                     <td className="px-4 py-3 text-right border border-gray-200 dark:border-gray-700">
                                         {piecesRef
                                             .filter(ref => ref.piece_to_create_id === piece.id)

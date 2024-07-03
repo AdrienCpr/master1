@@ -224,7 +224,7 @@ const CompanyOrders: React.FC<CompanyOrdersProps> = ({auth, companyOrders, suppl
         const filteredData = filterData();
 
         if (filteredData.length === 0) {
-            toast.error('Pas de data')
+            toast.error("Vous n'avez aucun achat pour le(s) mois séléctionné(s)")
             return '';
         }
 
